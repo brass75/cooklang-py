@@ -1,0 +1,28 @@
+version = 1
+requires-python = ">=3.10"
+
+[[package]]
+name = "cooklang-py"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "frontmatter" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "frontmatter", specifier = ">=3.0.8" }]
+
+[[package]]
+name = "frontmatter"
+version = "3.0.8"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8b/de/7425e1c97db39ca6615ccf89d8c3b47f2ee8dfdabb754fc99f925ee1a702/frontmatter-3.0.8.tar.gz", hash = "sha256:d913619d20f607e03557d52a8bf9b249e0b3093c770c5213c0f1231d2c97fe73", size = 5254 }
+
+[[package]]
+name = "pyyaml"
+version = "5.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/2c/9417b5c774792634834e730932745bc09a7d36754ca00acf1ccd1ac2594d/PyYAML-5.1.tar.gz", hash = "sha256:436bc774ecf7c103814098159fbb84c2715d25980175292c648f2da143909f95", size = 274244 }
