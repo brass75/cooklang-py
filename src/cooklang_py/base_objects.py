@@ -36,7 +36,7 @@ class BaseObj:
         :param notes: Notes from the raw string
         """
         self.raw = raw
-        self.name = name
+        self.name = name.strip()
         self._quantity = quantity
         self.notes = notes
         self._parsed_quantity = Quantity(quantity) if quantity else ''
@@ -48,7 +48,7 @@ class BaseObj:
         s = f'{s}{self.name}'
         if self.notes:
             s += f' ({self.notes})'
-        return s
+        return s.strip()
 
     def __repr__(self):
         params = [f'quantity={repr(self._quantity)}']
@@ -61,7 +61,9 @@ class BaseObj:
 
     def __str__(self):
         """ Short version of the formatted string """
-        return f'{self.name}({self.quantity})'
+        if self.quantity:
+            return f'{self.name} ({self.quantity})'.strip()
+        return self.name
 
     def __hash__(self):
         return hash(self.raw)
@@ -83,12 +85,10 @@ class BaseObj:
             next_start = min(next_object_starts)
             raw = raw[:next_start]
         note_pattern = NOTE_PATTERN if cls.supports_notes else ''
-        if match := re.search(rf'{QUANTITY_PATTERN}{note_pattern}', raw):
-            name = raw.split()[0]
-            return cls(f'{cls.prefix}{raw[:match.end(match.lastgroup) + 1]}', name=name, **match.groupdict())
-        if note_pattern and (match := re.search(r'^([\S]+)\((.*)\)', raw)):
-            name, notes = match.groups()
-            return cls(f'{cls.prefix}{raw[:match.end(match.lastgroup) + 1]}', name=name, notes=notes)
+        if match := re.search(rf'(?P<name>.*?){QUANTITY_PATTERN}{note_pattern}', raw):
+            return cls(f'{cls.prefix}{raw[:match.end(match.lastgroup) + 1]}', **match.groupdict())
+        if note_pattern and (match := re.search(rf'^(P<name>[\S]+){note_pattern}', raw)):
+            return cls(f'{cls.prefix}{raw[:match.end(match.lastgroup) + 1]}', **match.groupdict())
         name = raw.split()[0]
         return cls(f'{cls.prefix}{name}', name=name)
 
@@ -106,6 +106,12 @@ class Timing(BaseObj):
     """ Ingredient """
     prefix = '~'
     supports_notes = False
+
+    def __str__(self):
+        return str(self.quantity).strip()
+
+    def long_str(self) -> str:
+        return str(self)
 
 
 PREFIXES = {
