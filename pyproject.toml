@@ -1,9 +1,58 @@
 [project]
 name = "cooklang_py"
 version = "0.1.0"
-description = "Add your description here"
+description = "Python Parser for Cooklang"
 readme = "README.md"
+authors = [{name = "Dan Shernicoff", email = "dan@brassnet.biz"}]
+license = "MIT"
+license-files = ["LICENSE.md"]
 requires-python = ">=3.10"
 dependencies = [
     "frontmatter>=3.0.8",
 ]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.9.1",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.12.1",
+    "uv-build>=0.7.12,<0.8.0",
+]
+
+[project.urls]
+homepage = "https://github.com/brass75/cooklang-py"
+Repository = "https://github.com/brass75/cooklang-py"
+cooklang = "https://cooklang.org"
+
+[tool.ruff]
+target-version = "py312"
+# Allow lines to be as long as 120 characters.
+line-length = 120
+lint.select = [
+  "E",   # pycodestyle
+  "F",   # pyflakes
+  "UP",  # pyupgrade
+  "I",   # imports
+]
+
+
+lint.ignore = [
+]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+lint.fixable = ["ALL"]
+lint.unfixable = []
+
+exclude = [
+]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
+
+[build-system]
+requires = ["uv_build>=0.7.12,<0.8.0"]
+build-backend = "uv_build"

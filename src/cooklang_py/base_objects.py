@@ -1,19 +1,40 @@
-""" Base Object for Ingredient, Cookware, and Timing """
-import re
+"""Base Object for Ingredient, Cookware, and Timing"""
 
-from cooklang_py.const import QUANTITY_PATTERN, NOTE_PATTERN, UNIT_MAPPINGS
+import re
+from decimal import Decimal, InvalidOperation
+from fractions import Fraction
+
+from .const import NOTE_PATTERN, QUANTITY_PATTERN, UNIT_MAPPINGS
 
 
 class Quantity:
-    """ Quantity Class """
+    """Quantity Class"""
 
     def __init__(self, qstr: str):
         self._raw = qstr
         self.unit = ''
         if '%' in qstr:
             self.amount, self.unit = qstr.split('%')
+            self.unit = self.unit.strip()
         else:
             self.amount = qstr
+        self.amount = self.amount.strip()
+
+        # Try storing the quantity as a numeric value
+        try:
+            if '/' in self.amount:
+                self.amount = Fraction(re.sub(r'\s+', '', self.amount))
+            elif '.' in self.amount:
+                self.amount = Decimal(self.amount)
+            else:
+                self.amount = int(self.amount)
+        except (ValueError, InvalidOperation):
+            pass
+
+    def __eq__(self, other):
+        if not isinstance(other, Quantity):
+            return False
+        return self.amount == other.amount and self.unit == other.unit
 
     def __str__(self):
         return f'{self.amount} {UNIT_MAPPINGS.get(self.unit, self.unit)}'.strip()
@@ -21,12 +42,21 @@ class Quantity:
     def __repr__(self):
         return f'{self.__class__.__name__}(qstr={repr(self._raw)})'
 
+
 class BaseObj:
-    """ Base Object for Ingredient, Cookware, and Timing """
+    """Base Object for Ingredient, Cookware, and Timing"""
+
     prefix = None
     supports_notes = True
 
-    def __init__(self, raw: str, name: str, *, quantity: str = None, notes: str = None, ):
+    def __init__(
+        self,
+        raw: str,
+        name: str,
+        *,
+        quantity: str = None,
+        notes: str = None,
+    ):
         """
         Constructor for the BaseObj class
 
@@ -37,13 +67,18 @@ class BaseObj:
         """
         self.raw = raw
         self.name = name.strip()
-        self._quantity = quantity
+        self._quantity = quantity.strip() if quantity else None
         self.notes = notes
         self._parsed_quantity = Quantity(quantity) if quantity else ''
 
+    def __eq__(self, other):
+        if not (isinstance(other, BaseObj)):
+            return False
+        return all(getattr(self, attr) == getattr(other, attr) for attr in ('name', '_parsed_quantity', 'notes'))
+
     @property
     def long_str(self) -> str:
-        """ Formatted string """
+        """Formatted string"""
         s = str(self.quantity) + ' ' if self.quantity else ''
         s = f'{s}{self.name}'
         if self.notes:
@@ -51,16 +86,17 @@ class BaseObj:
         return s.strip()
 
     def __repr__(self):
-        params = [f'quantity={repr(self._quantity)}']
+        s = f'{self.__class__.__name__}(raw={self.raw!r}, name={self.name!r}, quantity={self._quantity!r}'
         if self.__class__.supports_notes:
-            params.append(f'notes={repr(self.notes)}')
+            s += f', notes={repr(self.notes)}'
+        return s + ')'
 
     @property
     def quantity(self) -> str:
         return self._parsed_quantity
 
     def __str__(self):
-        """ Short version of the formatted string """
+        """Short version of the formatted string"""
         if self.quantity:
             return f'{self.name} ({self.quantity})'.strip()
         return self.name
@@ -86,24 +122,41 @@ class BaseObj:
             raw = raw[:next_start]
         note_pattern = NOTE_PATTERN if cls.supports_notes else ''
         if match := re.search(rf'(?P<name>.*?){QUANTITY_PATTERN}{note_pattern}', raw):
-            return cls(f'{cls.prefix}{raw[:match.end(match.lastgroup) + 1]}', **match.groupdict())
+            return cls(f'{cls.prefix}{raw[: match.end(match.lastgroup) + 1]}', **match.groupdict())
         if note_pattern and (match := re.search(rf'^(P<name>[\S]+){note_pattern}', raw)):
-            return cls(f'{cls.prefix}{raw[:match.end(match.lastgroup) + 1]}', **match.groupdict())
+            return cls(f'{cls.prefix}{raw[: match.end(match.lastgroup) + 1]}', **match.groupdict())
         name = raw.split()[0]
+        name = re.sub(r'\W+$', '', name) or name
         return cls(f'{cls.prefix}{name}', name=name)
 
+
 class Ingredient(BaseObj):
-    """ Ingredient """
+    """Ingredient"""
+
     prefix = '@'
     supports_notes = True
 
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get('quantity', '').strip():
+            kwargs['quantity'] = 'some'
+        super().__init__(*args, **kwargs)
+
+
 class Cookware(BaseObj):
-    """ Ingredient """
+    """Ingredient"""
+
     prefix = '#'
     supports_notes = True
 
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get('quantity', '').strip():
+            kwargs['quantity'] = '1'
+        super().__init__(*args, **kwargs)
+
+
 class Timing(BaseObj):
-    """ Ingredient """
+    """Ingredient"""
+
     prefix = '~'
     supports_notes = False
 
@@ -119,4 +172,3 @@ PREFIXES = {
     '#': Cookware,
     '~': Timing,
 }
-
