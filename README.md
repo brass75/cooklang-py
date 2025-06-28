@@ -1,5 +1,9 @@
 # cooklang-py
 
+[![Tests](https://github.com/brass75/cooklang-py/actions/workflows/test.yml/badge.svg)](https://github.com/brass75/cooklang-py/actions/workflows/test.yml)
+[![Format and Lint](https://github.com/brass75/cooklang-py/actions/workflows/lint.yml/badge.svg)](https://github.com/brass75/cooklang-py/actions/workflows/lint.yml)
+[![CodeQL](https://github.com/brass75/cooklang-py/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/brass75/cooklang-py/actions/workflows/github-code-scanning/codeql)
+
 A parser for the [Cooklang recipe markup language](https://cooklang.org)
 
 ## Installation
