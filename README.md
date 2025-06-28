@@ -25,6 +25,7 @@ recipe = Recipe(recipe_string)
 recipe_file = '/path/to/recipe/file'
 recipe = Recipe.from_file(recipe_file)
 ```
+
 Just like a recipe in a book a `Recipe` contains:
 
 - Ingredients
@@ -60,7 +61,8 @@ inherit from the `BaseObj`. They all have the following 3 attributes:
 ## Compatibility
 
 `cooklang-py` passes all canonical tests defined at
-https://github.com/cooklang/cooklang-rs/blob/main/tests/canonical.yaml for the following platforms:
+[https://github.com/cooklang/cooklang-rs/blob/main/tests/canonical.yaml](https://github.com/cooklang/cooklang-rs/blob/main/tests/canonical.yaml)
+for the following platforms:
 
 - Linux
 - MacOS
