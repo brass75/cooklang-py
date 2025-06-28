@@ -825,5 +825,3 @@ tests:
 
 # NOTE: Unicode newlines may be impossible to test using YAML,
 # given how the markup uses them for semantic reasoning.
-
-# TODO add common syntax errors
