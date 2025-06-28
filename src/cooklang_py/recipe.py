@@ -12,15 +12,15 @@ class Recipe:
         self._parsed = frontmatter.Frontmatter().read(recipe)
         if not (body := self._parsed['body']):
             raise ValueError('No body found in recipe!')
-        self.sections = list()
+        self.steps = list()
         self.ingredients = list()
         self.cookware = list()
         for line in re.split(r'\n{2,}', body):
             line = re.sub(r'\s+', ' ', line)
-            section = Section(line)
-            self.sections.append(section)
-            self.ingredients.extend(section.ingredients)
-            self.cookware.extend(section.cookware)
+            step = Step(line)
+            self.steps.append(step)
+            self.ingredients.extend(step.ingredients)
+            self.cookware.extend(step.cookware)
 
     def __str__(self):
         s = "Ingredients: \n\n"
@@ -31,8 +31,8 @@ class Recipe:
             s += '\n'.join(ing.long_str for ing in self.cookware)
             s += '\n' + ('-' * 50) + '\n'
         s += '\n'
-        s += '\n'.join(map(str, self.sections))
-        return s + '\n'
+        s += '\n'.join(map(str, self.steps))
+        return s.replace('\\', '') + '\n'
 
     @staticmethod
     def from_file(filename: PathLike):
@@ -45,7 +45,7 @@ class Recipe:
         with open(filename) as f:
             return Recipe(f.read())
 
-class Section:
+class Step:
     def __init__(self, line: str):
         self._raw = line
         self.ingredients = list()
