@@ -1,0 +1,34 @@
+name: Tests
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/test.yml"
+      - "src/re_plugin_pack/**"
+      - "tests/**"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - ".github/workflows/test.yml"
+      - "src/re_plugin_pack/**"
+      - "tests/**"
+      - "pyproject.toml"
+jobs:
+  test-against-python-matrix:
+    name: PyTest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+      fail-fast: true
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Run tests
+        run: |
+          uv run -p ${{ matrix.python-version }} pytest
