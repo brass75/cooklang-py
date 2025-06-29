@@ -70,4 +70,4 @@ for the following platforms:
 
 - Linux
 - MacOS
-- Windows (with the exception of test cases with Unicode characters.)
+- Windows
