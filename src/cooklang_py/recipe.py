@@ -12,7 +12,9 @@ class Metadata:
 
     def __init__(self, metadata: str):
         self._parsed = frontmatter.Frontmatter().read(metadata)
-        attributes = self._parsed.get('attributes')
+        if not (attributes := self._parsed.get('attributes')):
+            self._mapped = dict()
+            return
         if isinstance(attributes, str):
             attrs = dict()
             for line in attributes.splitlines():
@@ -41,6 +43,7 @@ class Metadata:
 class Recipe:
     def __init__(self, recipe: str):
         self._raw = recipe
+        self.metadata = Metadata('')
         if match := re.search(r'(---.*---\s*)(.*)', recipe, re.DOTALL):
             self.metadata = Metadata(match.group(1))
             body = match.group(2)
