@@ -7,6 +7,7 @@ from cooklang_py import Recipe
     'recipe',
     [
         'potato_kugel',
+        'no_md',
     ],
 )
 def test_recipe(recipe):
