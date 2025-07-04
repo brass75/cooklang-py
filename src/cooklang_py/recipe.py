@@ -10,20 +10,8 @@ from .const import METADATA_DISPLAY_MAP, METADATA_MAPPINGS
 class Metadata:
     """Recipe Metadata Class"""
 
-    def __init__(self, metadata: str):
-        self._parsed = frontmatter.Frontmatter().read(metadata)
-        if not (attributes := self._parsed.get('attributes')):
-            self._mapped = dict()
-            return
-        if isinstance(attributes, str):
-            attrs = dict()
-            for line in attributes.splitlines():
-                if ':' not in line:
-                    continue
-                key, value = line.split(':', 1)
-                attrs[key.strip()] = value
-            attributes = attrs
-        self._parsed = {k.strip(): v for k, v in attributes.items()}
+    def __init__(self, metadata: dict):
+        self._parsed = {k.strip(): v for k, v in metadata.items()}
         self._mapped = {METADATA_MAPPINGS.get(k.lower(), k.lower()): v for k, v in self._parsed.items()}
         for attr, value in self._mapped.items():
             setattr(self, attr, value)
@@ -43,12 +31,8 @@ class Metadata:
 class Recipe:
     def __init__(self, recipe: str):
         self._raw = recipe
-        self.metadata = Metadata('')
-        if match := re.search(r'(---.*---\s*)(.*)', recipe, re.DOTALL):
-            self.metadata = Metadata(match.group(1))
-            body = match.group(2)
-        else:
-            body = recipe
+        metadata, body = frontmatter.parse(re.sub(r':(?=\S)', ': ', recipe))
+        self.metadata = Metadata(metadata)
         if not body:
             raise ValueError('No body found in recipe!')
         self.steps = list()
