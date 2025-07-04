@@ -24,7 +24,7 @@ name = "cooklang-py"
 version = "0.1.1"
 source = { editable = "." }
 dependencies = [
-    { name = "frontmatter" },
+    { name = "python-frontmatter" },
 ]
 
 [package.dev-dependencies]
@@ -38,7 +38,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "frontmatter", specifier = ">=3.0.8" }]
+requires-dist = [{ name = "python-frontmatter", specifier = "==1.1.0" }]
 
 [package.metadata.requires-dev]
 dev = [
@@ -150,15 +150,6 @@ wheels = [
 ]
 
 [[package]]
-name = "frontmatter"
-version = "3.0.8"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pyyaml" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/de/7425e1c97db39ca6615ccf89d8c3b47f2ee8dfdabb754fc99f925ee1a702/frontmatter-3.0.8.tar.gz", hash = "sha256:d913619d20f607e03557d52a8bf9b249e0b3093c770c5213c0f1231d2c97fe73", size = 5254 }
-
-[[package]]
 name = "identify"
 version = "2.6.12"
 source = { registry = "https://pypi.org/simple" }
@@ -267,6 +258,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/18/99/668cade231f434aaa59bbfbf49469068d2ddd945000621d3d165d2e7dd7b/pytest_cov-6.2.1.tar.gz", hash = "sha256:25cc6cc0a5358204b8108ecedc51a9b57b34cc6b8c967cc2c01a4e00d8a67da2", size = 69432 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/bc/16/4ea354101abb1287856baa4af2732be351c7bee728065aed451b678153fd/pytest_cov-6.2.1-py3-none-any.whl", hash = "sha256:f5bc4c23f42f1cdd23c70b1dab1bbaef4fc505ba950d53e0081d0730dd7e86d5", size = 24644 },
+]
+
+[[package]]
+name = "python-frontmatter"
+version = "1.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/96/de/910fa208120314a12f9a88ea63e03707261692af782c99283f1a2c8a5e6f/python-frontmatter-1.1.0.tar.gz", hash = "sha256:7118d2bd56af9149625745c58c9b51fb67e8d1294a0c76796dafdc72c36e5f6d", size = 16256 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/49/87/3c8da047b3ec5f99511d1b4d7a5bc72d4b98751c7e78492d14dc736319c5/python_frontmatter-1.1.0-py3-none-any.whl", hash = "sha256:335465556358d9d0e6c98bbeb69b1c969f2a4a21360587b9873bfc3b213407c1", size = 9834 },
 ]
 
 [[package]]

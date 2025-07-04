@@ -4,7 +4,7 @@ import pytest
 import yaml
 from yaml import BaseLoader
 
-from cooklang_py import Cookware, Ingredient, Metadata, Step, Timing
+from cooklang_py import Cookware, Ingredient, Recipe, Step, Timing
 
 CANONICAL_TESTS = yaml.load(open('tests/data/canonical.yaml', 'rb').read().decode('utf-8'), BaseLoader)
 
@@ -56,7 +56,7 @@ def test_canonical_cases(name, data):
 def handle_metadata_test(name, data):
     """Metadata tests"""
     test_input = re.sub(r'\s*>>\s*', '\n', data['source']).strip()
-    metadata = Metadata(f'---\n{test_input}---\n123')
+    metadata = Recipe(f'---\n{test_input}\n---\n123\n').metadata
     result = data['result']['metadata']
     for attr, value in result.items():
         parsed = getattr(metadata, attr, None)
