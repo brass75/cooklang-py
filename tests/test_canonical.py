@@ -6,7 +6,7 @@ from yaml import BaseLoader
 
 from cooklang_py import Cookware, Ingredient, Metadata, Step, Timing
 
-CANONICAL_TESTS = yaml.load(open('tests/data/canonical.yaml', 'rb').read().decode("utf-8"), BaseLoader)
+CANONICAL_TESTS = yaml.load(open('tests/data/canonical.yaml', 'rb').read().decode('utf-8'), BaseLoader)
 
 
 def get_args(test_dict: dict) -> dict:
