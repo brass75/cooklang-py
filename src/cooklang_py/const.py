@@ -14,7 +14,12 @@ UNIT_MAPPINGS = {
     'pound': 'lb',
     'liter': 'l',
     'milliliter': 'ml',
+    'hour': 'h',
+    'minute': 'm',
+    'second': 's',
 }
+
+REVERSE_UNIT_MAPPING = {v: k for k, v in UNIT_MAPPINGS.items()}
 
 METADATA_MAPPINGS = {
     'source': 'source.name',

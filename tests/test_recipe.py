@@ -13,5 +13,4 @@ from cooklang_py import Recipe
 def test_recipe(recipe):
     expected = open(f'tests/data/{recipe}.txt').read()
     recipe = Recipe.from_file(f'tests/data/{recipe}.md')
-    print(recipe)
     assert str(recipe) == expected

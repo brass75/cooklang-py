@@ -4,7 +4,7 @@ import re
 from decimal import Decimal, InvalidOperation
 from fractions import Fraction
 
-from .const import NOTE_PATTERN, QUANTITY_PATTERN, UNIT_MAPPINGS
+from .const import NOTE_PATTERN, QUANTITY_PATTERN, REVERSE_UNIT_MAPPING, UNIT_MAPPINGS
 
 
 class Quantity:
@@ -31,16 +31,19 @@ class Quantity:
         except (ValueError, InvalidOperation):
             pass
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Quantity):
             return False
         return self.amount == other.amount and self.unit == other.unit
 
-    def __str__(self):
-        return f'{self.amount} {UNIT_MAPPINGS.get(self.unit, self.unit)}'.strip()
+    def __str__(self) -> str:
+        return f'{self.amount} {UNIT_MAPPINGS.get(self.unit, REVERSE_UNIT_MAPPING.get(self.unit, self.unit))}'.strip()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(qstr={repr(self._raw)})'
+
+    def __hash__(self) -> int:
+        return hash((self.amount, self.unit))
 
 
 class BaseObj:
@@ -67,11 +70,11 @@ class BaseObj:
         """
         self.raw = raw
         self.name = name.strip()
-        self._quantity = quantity.strip() if quantity else None
+        self._quantity = quantity.strip() if quantity and quantity.strip() else None
         self.notes = notes
-        self._parsed_quantity = Quantity(quantity) if quantity else ''
+        self._parsed_quantity = Quantity(self._quantity) if self._quantity else ''
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not (isinstance(other, BaseObj)):
             return False
         return all(getattr(self, attr) == getattr(other, attr) for attr in ('name', '_parsed_quantity', 'notes'))
@@ -85,24 +88,24 @@ class BaseObj:
             s += f' ({self.notes})'
         return s.strip()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         s = f'{self.__class__.__name__}(raw={self.raw!r}, name={self.name!r}, quantity={self._quantity!r}'
         if self.__class__.supports_notes:
             s += f', notes={repr(self.notes)}'
         return s + ')'
 
     @property
-    def quantity(self) -> str:
+    def quantity(self) -> Quantity | str:
         return self._parsed_quantity
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Short version of the formatted string"""
         if self.quantity:
             return f'{self.name} ({self.quantity})'.strip()
         return self.name
 
-    def __hash__(self):
-        return hash(self.raw)
+    def __hash__(self) -> int:
+        return hash(tuple(getattr(self, attr) for attr in ('name', '_parsed_quantity', 'notes')))
 
     @classmethod
     def factory(cls, raw: str):
@@ -136,32 +139,22 @@ class Ingredient(BaseObj):
     prefix = '@'
     supports_notes = True
 
-    def __init__(self, *args, **kwargs):
-        if not kwargs.get('quantity', '').strip():
-            kwargs['quantity'] = 'some'
-        super().__init__(*args, **kwargs)
-
 
 class Cookware(BaseObj):
-    """Ingredient"""
+    """Cookware"""
 
     prefix = '#'
     supports_notes = True
 
-    def __init__(self, *args, **kwargs):
-        if not kwargs.get('quantity', '').strip():
-            kwargs['quantity'] = '1'
-        super().__init__(*args, **kwargs)
-
 
 class Timing(BaseObj):
-    """Ingredient"""
+    """Timing"""
 
     prefix = '~'
     supports_notes = False
 
-    def __str__(self):
-        return str(self.quantity).strip()
+    def __str__(self) -> str:
+        return f'{self.name.strip()} {str(self.quantity).strip()}'
 
     def long_str(self) -> str:
         return str(self)
