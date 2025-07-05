@@ -10,6 +10,12 @@ CANONICAL_TESTS = yaml.load(open('tests/data/canonical.yaml', 'rb').read().decod
 
 
 def get_args(test_dict: dict) -> dict:
+    """
+    Convert the test data to arguments that can be used to initialize the object
+
+    :params test_dict: The dictionary of test data.
+    :return: kwargs dictionary for class instantiation.
+    """
     res = dict()
     amount = test_dict.get('quantity')
     unit = test_dict.get('units')
@@ -17,15 +23,22 @@ def get_args(test_dict: dict) -> dict:
     if unit and amount:
         res['quantity'] = f'{amount}%{unit}'
     elif amount:
-        res['quantity'] = amount
+        # The canonical tests populate empty quantities with "1" for cookware
+        # and "some" for ingredients so filter those out.
+        if amount not in ['1', 'some']:
+            res['quantity'] = amount
     return res
 
 
 @pytest.mark.parametrize('name, data', CANONICAL_TESTS['tests'].items())
 def test_canonical_cases(name, data):
     """Run the canonical test cases"""
+
+    # Since the test data is all one file, and we need to handle metadata differently,
+    # return the metadata handler function result.
     if data['result'].get('metadata'):
         return handle_metadata_test(name, data)
+
     test_input = data['source']
     all_expected = iter(data['result']['steps'])
     for line in test_input.split('\n\n'):

@@ -62,6 +62,12 @@ inherit from the `BaseObj`. They all have the following 3 attributes:
 - `notes` - any notes for the item (i.e. "greased", "peeled and diced", etc.)
   - `Timings` do not have notes per the Cooklang specification.
 
+### Overriding implementations
+
+The implementations of Cookware, Timings, and Ingredients can be overridden by creating a new
+implementation (inheriting from either that class or from `BaseObj`) and calling `Recipe` or
+`Step` with an updated `prefixes` dictionary that points the desired prefix to the new class.
+
 ## Compatibility
 
 `cooklang-py` passes all canonical tests defined at
