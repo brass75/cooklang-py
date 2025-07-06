@@ -6,6 +6,8 @@ NOTE_PATTERN = r'(?:\((?P<notes>.*)\))?'
 UNIT_MAPPINGS = {
     'teaspoon': 'tsp',
     'tablespoon': 'tbsp',
+    'cup': 'c',
+    'cups': 'c',
     'quart': 'qt',
     'gallon': 'gal',
     'kilo': 'kg',
