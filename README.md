@@ -14,6 +14,10 @@ To install just run:
 pip install cooklang-py
 ```
 
+## Documentation
+
+Full documentation is available at [docs/docs/index.md](docs/docs/index.md)
+
 ## `Recipe`
 
 The `Recipe` is the primary unit. There are 2 ways to create a `Recipe` object:

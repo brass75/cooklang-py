@@ -4,13 +4,18 @@ import re
 from decimal import Decimal, InvalidOperation
 from fractions import Fraction
 
-from .const import NOTE_PATTERN, QUANTITY_PATTERN, REVERSE_UNIT_MAPPING, UNIT_MAPPINGS
+from .const import NOTE_PATTERN, QUANTITY_PATTERN, UNIT_MAPPINGS
 
 
 class Quantity:
     """Quantity Class"""
 
     def __init__(self, qstr: str):
+        """
+        Constructor for the Quantity class
+
+        :param qstr: The quantity string
+        """
         self._raw = qstr
         self.unit = ''
         if '%' in qstr:
@@ -37,7 +42,7 @@ class Quantity:
         return self.amount == other.amount and self.unit == other.unit
 
     def __str__(self) -> str:
-        return f'{self.amount} {UNIT_MAPPINGS.get(self.unit, REVERSE_UNIT_MAPPING.get(self.unit, self.unit))}'.strip()
+        return f'{self.amount} {UNIT_MAPPINGS.get(self.unit, self.unit)}'.strip()
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(qstr={repr(self._raw)})'
@@ -156,6 +161,7 @@ class Timing(BaseObj):
     def __str__(self) -> str:
         return f'{self.name.strip()} {str(self.quantity).strip()}'
 
+    @property
     def long_str(self) -> str:
         return str(self)
 

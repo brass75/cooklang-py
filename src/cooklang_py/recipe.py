@@ -130,7 +130,7 @@ class Step:
         self.cookware: list[Cookware] = list()
         self._sections: list[str | BaseObj] = list()
         self._prefixes: dict[str, type[BaseObj]] = prefixes
-        self.parse(line)
+        self._parse(line)
 
     def __iter__(self):
         yield from self._sections
@@ -141,7 +141,7 @@ class Step:
     def __repr__(self):
         return repr(self._sections)
 
-    def parse(self, line: str):
+    def _parse(self, line: str):
         """
         Parse a line into its component parts
 
