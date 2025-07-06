@@ -3,12 +3,13 @@
 cooklang-py is a Python based parsing library for the [Cooklang](https://cooklang.org)
 recipe markup language. It will parse a Cooklang file and give access to:
 
-- Recipe
-- Metadata
+- [Recipe](recipe.md)
+- [Metadata](metadata.md)
 - [Step](step.md)
 - [Ingredients](ingredient.md)
 - [Cookware](cookware.md)
 - [Timing](timing.md)
+- [Quantity](quantity.md)
 
 Note that `Ingredients`, `Cookware`, and `Timings` all derive from the
 [`BaseObj` class](base_object.md).
