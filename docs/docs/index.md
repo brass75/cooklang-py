@@ -6,7 +6,7 @@ recipe markup language. It will parse a Cooklang file and give access to:
 - [Recipe](recipe.md)
 - [Metadata](metadata.md)
 - [Step](step.md)
-- [Ingredients](ingredient.md)
+- [Ingredient](ingredient.md)
 - [Cookware](cookware.md)
 - [Timing](timing.md)
 - [Quantity](quantity.md)
