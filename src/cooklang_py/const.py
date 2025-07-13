@@ -3,7 +3,7 @@
 QUANTITY_PATTERN = r'(?<!\\){(?P<quantity>.*?)}'
 NOTE_PATTERN = r'(?:\((?P<notes>.*)\))?'
 
-UNIT_MAPPINGS = {
+LONG_TO_SHORT_MAPPINGS = {
     'teaspoon': 'tsp',
     'tablespoon': 'tbsp',
     'cup': 'c',
@@ -21,7 +21,7 @@ UNIT_MAPPINGS = {
     'second': 's',
 }
 
-REVERSE_UNIT_MAPPING = {v: k for k, v in UNIT_MAPPINGS.items()}
+SHORT_TO_LONG_MAPPINGS = {v: k for k, v in LONG_TO_SHORT_MAPPINGS.items()}
 
 METADATA_MAPPINGS = {
     'source': 'source.name',

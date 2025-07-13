@@ -16,6 +16,6 @@ Beat the @eggs{3} until thick.
 Stir in the @potatoes{3%cups}(drained and grated), @potato flour/matza meal{1/3%cup},
 @salt{1/2%tbsp}, @pepper{1/8%tsp}, @onion{1 small}(grated), and @fat or oil{4%tbsp}.
 
-Turn into a greased #1.5 qt baking dish{}.
+Turn into a greased #baking dish{1.5%qt}.
 
 Bake until browned, approximately ~{1%hour}.
