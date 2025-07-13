@@ -1,23 +1,42 @@
 name: Publish
-permissions:
-  contents: read
 on:
   release:
-    types: [created]
+    types: [published]
 jobs:
   test:
     uses: ./.github/workflows/test.yml
-  build_and_publish:
+  build:
     needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build
+        run: |
+          echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+          uv build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./dist
+          name: cooklang-package
+
+
+  publish-pypi:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
     runs-on: ubuntu-latest
     permissions:
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-      - run: uv build
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
-          packages-dir: ./dist
+          path: ./dist
+          name: cooklang-package
+      - name: Push to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
