@@ -3,7 +3,7 @@
 import re
 from decimal import Decimal, InvalidOperation
 
-from .const import NOTE_PATTERN, QUANTITY_PATTERN, UNIT_MAPPINGS
+from .const import NOTE_PATTERN, QUANTITY_PATTERN, REVERSE_UNIT_MAPPING, UNIT_MAPPINGS
 from .utils import WholeFraction
 
 
@@ -19,8 +19,7 @@ class Quantity:
         self._raw = qstr
         self.unit = ''
         if '%' in qstr:
-            self.amount, self.unit = qstr.split('%')
-            self.unit = self.unit.strip()
+            self.amount, self.unit = map(str.strip, qstr.split('%'))
         else:
             self.amount = qstr
         self.amount = self.amount.strip()
@@ -30,7 +29,8 @@ class Quantity:
             if match := re.match(r'(\d+)?\s*(\d+)\s*/\s*(\d+)', self.amount):
                 whole, *parts = match.groups()
                 whole = int(whole) if whole else 0
-                self.amount = whole + WholeFraction('/'.join(parts))
+                parts = WholeFraction('/'.join(parts))
+                self.amount = WholeFraction(whole + parts)
             elif '.' in self.amount:
                 self.amount = Decimal(self.amount)
             else:
@@ -51,6 +51,69 @@ class Quantity:
 
     def __hash__(self) -> int:
         return hash((self.amount, self.unit))
+
+    def __format__(self, format_spec: str) -> str:
+        """
+        Return the quantity based on the format spec
+
+        %a - Amount
+        %af - Amount as fraction
+        %u - Unit
+        %ul - Long unit
+        %us - short unit
+        """
+        s = ''
+        fs = iter(format_spec)
+        c = next(fs)
+        while True:
+            if c == '%':
+                try:
+                    c = next(fs)
+                except StopIteration:
+                    return s
+                match c:
+                    case 'a':
+                        try:
+                            c = next(fs)
+                        except StopIteration:
+                            return s + str(self.amount)
+                        match c:
+                            case 'f':
+                                try:
+                                    f = WholeFraction(self.amount)
+                                    s += str(f)
+                                except ValueError:
+                                    s += str(self.amount)
+                            case '%':
+                                s += str(self.amount)
+                                continue
+                            case _:
+                                s += str(self.amount) + c
+                    case 'u':
+                        try:
+                            c = next(fs)
+                        except StopIteration:
+                            return s + self.unit
+                        match c:
+                            case 's':
+                                s += UNIT_MAPPINGS.get(self.unit, self.unit)
+                            case 'l':
+                                s += REVERSE_UNIT_MAPPING.get(self.unit, self.unit)
+                            case '%':
+                                s += self.unit
+                                continue
+                            case _:
+                                s += self.unit + c
+                    case _:
+                        s += f'%{c}'
+            else:
+                s += c
+            try:
+                c = next(fs)
+            except StopIteration:
+                return s
+            continue
+        return s
 
 
 class BaseObj:
