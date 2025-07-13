@@ -1,5 +1,6 @@
 from .base_objects import BaseObj, Cookware, Ingredient, Quantity, Timing
 from .recipe import PREFIXES, Metadata, Recipe, Step
+from .utils import WholeFraction
 
 __all__ = [
     'Recipe',
@@ -11,4 +12,5 @@ __all__ = [
     'Metadata',
     'PREFIXES',
     'BaseObj',
+    'WholeFraction',
 ]

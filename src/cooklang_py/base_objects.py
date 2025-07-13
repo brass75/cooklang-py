@@ -2,9 +2,9 @@
 
 import re
 from decimal import Decimal, InvalidOperation
-from fractions import Fraction
 
 from .const import NOTE_PATTERN, QUANTITY_PATTERN, UNIT_MAPPINGS
+from .utils import WholeFraction
 
 
 class Quantity:
@@ -27,8 +27,10 @@ class Quantity:
 
         # Try storing the quantity as a numeric value
         try:
-            if '/' in self.amount:
-                self.amount = Fraction(re.sub(r'\s+', '', self.amount))
+            if match := re.match(r'(\d+)?\s*(\d+)\s*/\s*(\d+)', self.amount):
+                whole, *parts = match.groups()
+                whole = int(whole) if whole else 0
+                self.amount = whole + WholeFraction('/'.join(parts))
             elif '.' in self.amount:
                 self.amount = Decimal(self.amount)
             else:
