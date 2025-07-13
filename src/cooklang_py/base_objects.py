@@ -3,7 +3,7 @@
 import re
 from decimal import Decimal, InvalidOperation
 
-from .const import NOTE_PATTERN, QUANTITY_PATTERN, REVERSE_UNIT_MAPPING, UNIT_MAPPINGS
+from .const import LONG_TO_SHORT_MAPPINGS, NOTE_PATTERN, QUANTITY_PATTERN, SHORT_TO_LONG_MAPPINGS
 from .utils import WholeFraction
 
 
@@ -44,7 +44,7 @@ class Quantity:
         return self.amount == other.amount and self.unit == other.unit
 
     def __str__(self) -> str:
-        return f'{self.amount} {UNIT_MAPPINGS.get(self.unit, self.unit)}'.strip()
+        return f'{self:%a %us}'.strip()
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(qstr={repr(self._raw)})'
@@ -105,9 +105,9 @@ class Quantity:
                             s = s[: spaces * -1]
                         match c:
                             case 's':
-                                s += UNIT_MAPPINGS.get(self.unit, self.unit if self.unit else '')
+                                s += LONG_TO_SHORT_MAPPINGS.get(self.unit, self.unit if self.unit else '')
                             case 'l':
-                                s += REVERSE_UNIT_MAPPING.get(self.unit, self.unit if self.unit else '')
+                                s += SHORT_TO_LONG_MAPPINGS.get(self.unit, self.unit if self.unit else '')
                             case '%':
                                 s += self.unit if self.unit else ''
                                 continue
