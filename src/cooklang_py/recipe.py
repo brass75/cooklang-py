@@ -89,11 +89,15 @@ class Recipe:
     def __str__(self) -> str:
         s = str(self.metadata)
         s += 'Ingredients:\n\n'
-        s += '\n'.join(ing.long_str for ing in self.ingredients)
+        s += '\n'.join(
+            (f'{ing:%q[%af %us] %n (%c)}' if ing.notes else f'{ing:%q[%af %us] %n}') for ing in self.ingredients
+        )
         s += '\n' + ('-' * 50) + '\n'
         if self.cookware:
             s += '\nCookware:\n\n'
-            s += '\n'.join(ing.long_str for ing in self.cookware)
+            s += '\n'.join(
+                (f'{cw:%q[%af %us] %n (%c)}' if cw.notes else f'{cw:%q[%af %us] %n}') for cw in self.cookware
+            )
             s += '\n' + ('-' * 50) + '\n'
         s += '\n'
         s += '\n'.join(map(str, self))

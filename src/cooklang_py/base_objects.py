@@ -62,9 +62,12 @@ class Quantity:
         %ul - Long unit
         %us - short unit
         """
+        if not format_spec:
+            return str(self)
         s = ''
         fs = iter(format_spec)
         c = next(fs)
+        spaces = 0
         while True:
             if c == '%':
                 try:
@@ -76,38 +79,48 @@ class Quantity:
                         try:
                             c = next(fs)
                         except StopIteration:
-                            return s + str(self.amount)
+                            return s + str(self.amount) if self.amount else ''
                         match c:
                             case 'f':
                                 try:
-                                    f = WholeFraction(self.amount)
+                                    f = WholeFraction(self.amount) if self.amount else ''
                                     s += str(f)
+                                    spaces = 0
                                 except ValueError:
-                                    s += str(self.amount)
+                                    s += str(self.amount if self.amount else '')
+                                    spaces = 0
                             case '%':
-                                s += str(self.amount)
+                                s += str(self.amount if self.amount else '')
+                                spaces = 0
                                 continue
                             case _:
                                 s += str(self.amount) + c
+                                spaces = 0
                     case 'u':
                         try:
                             c = next(fs)
                         except StopIteration:
-                            return s + self.unit
+                            return s + self.unit if self.unit else ''
+                        if not self.unit and spaces:
+                            s = s[: spaces * -1]
                         match c:
                             case 's':
-                                s += UNIT_MAPPINGS.get(self.unit, self.unit)
+                                s += UNIT_MAPPINGS.get(self.unit, self.unit if self.unit else '')
                             case 'l':
-                                s += REVERSE_UNIT_MAPPING.get(self.unit, self.unit)
+                                s += REVERSE_UNIT_MAPPING.get(self.unit, self.unit if self.unit else '')
                             case '%':
-                                s += self.unit
+                                s += self.unit if self.unit else ''
                                 continue
                             case _:
-                                s += self.unit + c
+                                s += self.unit if self.unit else '' + c
                     case _:
                         s += f'%{c}'
             else:
                 s += c
+                if c == ' ':
+                    spaces += 1
+                else:
+                    spaces = 0
             try:
                 c = next(fs)
             except StopIteration:
@@ -149,15 +162,6 @@ class BaseObj:
             return False
         return all(getattr(self, attr) == getattr(other, attr) for attr in ('name', '_parsed_quantity', 'notes'))
 
-    @property
-    def long_str(self) -> str:
-        """Formatted string"""
-        s = str(self.quantity) + ' ' if self.quantity else ''
-        s = f'{s}{self.name}'
-        if self.notes:
-            s += f' ({self.notes})'
-        return s.strip()
-
     def __repr__(self) -> str:
         s = f'{self.__class__.__name__}(raw={self.raw!r}, name={self.name!r}, quantity={self._quantity!r}'
         if self.__class__.supports_notes:
@@ -176,6 +180,56 @@ class BaseObj:
 
     def __hash__(self) -> int:
         return hash(tuple(getattr(self, attr) for attr in ('name', '_parsed_quantity', 'notes')))
+
+    def __format__(self, format_spec: str) -> str:
+        """
+        Format the string
+
+        %n - Name
+        %q - Quantity
+        %q[<format>] - Quantity as format
+        %c - Notes
+        """
+        if not format_spec:
+            return str(self)
+        s = ''
+        fs = iter(format_spec)
+        c = next(fs)
+        while True:
+            if c == '%':
+                try:
+                    c = next(fs)
+                except StopIteration:
+                    return s
+                match c:
+                    case 'c':
+                        if self.notes:
+                            s += self.notes
+                    case 'n':
+                        s += self.name
+                    case 'q':
+                        try:
+                            c = next(fs)
+                        except StopIteration:
+                            return s + str(self.quantity)
+                        format_spec = ''
+                        if c == '[':
+                            try:
+                                while (c := next(fs)) != ']':
+                                    format_spec += c
+                            except StopIteration:
+                                return s + f'{self.quantity:{format_spec}}' if self.quantity else ''
+                        s += f'{self.quantity:{format_spec}}' if self.quantity else ''
+                    case _:
+                        s += f'%{c}'
+            else:
+                s += c
+            try:
+                c = next(fs)
+            except StopIteration:
+                return s
+            continue
+        return s
 
     @classmethod
     def factory(cls, raw: str):
