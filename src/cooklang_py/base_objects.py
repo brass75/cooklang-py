@@ -128,6 +128,11 @@ class Quantity:
             continue
         return s
 
+    def __radd__(self, other) -> str:
+        if not isinstance(other, str):
+            raise TypeError(f'Cannot add {self} to {other.__class__.__name__}')
+        return f'{other}{self}'
+
 
 class BaseObj:
     """Base Object for Ingredient, Cookware, and Timing"""
@@ -255,6 +260,11 @@ class BaseObj:
         name = raw.split()[0]
         name = re.sub(r'\W+$', '', name) or name
         return cls(f'{cls.prefix}{name}', name=name)
+
+    def __radd__(self, other) -> str:
+        if not isinstance(other, str):
+            raise TypeError(f'Cannot add {self} to {other.__class__.__name__}')
+        return f'{other}{self}'
 
 
 class Ingredient(BaseObj):
