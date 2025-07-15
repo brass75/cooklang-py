@@ -17,8 +17,11 @@ LONG_TO_SHORT_MAPPINGS = {
     'liter': 'l',
     'milliliter': 'ml',
     'hour': 'h',
+    'hours': 'h',
     'minute': 'm',
+    'minutes': 'm',
     'second': 's',
+    'seconds': 's',
 }
 
 SHORT_TO_LONG_MAPPINGS = {v: k for k, v in LONG_TO_SHORT_MAPPINGS.items()}

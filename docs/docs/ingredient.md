@@ -30,3 +30,31 @@ class Ingredient(BaseObj):
     prefix = '@'
     supports_notes = True
 ```
+
+#### Dunder implementations
+
+`__str__` - The string will be formatted `<name> (<quantity>)`. This is the equivaluent to using the 
+`%n (%q)` `format_spec`.
+
+`__format__` - String Formatting.
+The following options are available for format_spec:
+
+- %n - Name
+- %q - Quantity
+- %q[<format>] - Quantity as format
+- %c - Notes
+
+Examples:
+
+```python
+from cooklang_py import Ingredient
+ing = Ingredient(raw='', name='flour', quantity='1 3/4%cup', notes='sifted')
+print(format(ing, '%n (%q[%af %ul])'))
+flour (1 3/4 cup)
+print(format(ing, '%q %n (%c)'))
+1 3/4 c flour (sifted)
+print(format(ing, '%n (%q)'))
+flour (1 3/4 c)
+
+```
+

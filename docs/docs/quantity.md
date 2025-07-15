@@ -49,4 +49,31 @@ True
 ```
 
 `__str__` - The string will be formatted `<amount> <unit>` and the `unit` will be converted to an
-abbreviated unit per `UNIT_MAPPINGS` (importable from `cooklang_py.const`).
+abbreviated unit per `UNIT_MAPPINGS` (importable from `cooklang_py.const`). The `str` representaion
+is equialent to using the `%a %us` `format_spec` `<amount> <short unit>`
+
+`__format__` - String Formatting.
+The following options are available for format_spec:
+
+- %a - Amount
+- %af - Amount as fraction
+- %u - Unit
+- %ul - Long unit
+- %us - short unit
+
+Examples:
+
+```python
+from cooklang_py import Quantity
+q = Quantity('1 3/4%cup')
+print(format(q, '%af ul'))
+1 3/4 ul
+print(format(q, '%af us'))
+1 3/4 us
+print(format(q, '%af %ul'))
+1 3/4 cup
+print(format(q, '%af %us'))
+1 3/4 c
+print(format(q, '%u (%a)'))
+cup(1 3/4)
+```

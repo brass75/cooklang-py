@@ -29,3 +29,30 @@ class Cookware(BaseObj):
     prefix = '#'
     supports_notes = True
 ```
+
+#### Dunder implementations
+
+`__str__` - The string will be formatted `<name> (<quantity>)`. This is the equivaluent to using the 
+`%n (%q)` `format_spec`.
+
+`__format__` - String Formatting.
+The following options are available for format_spec:
+
+- %n - Name
+- %q - Quantity
+- %q[<format>] - Quantity as format
+- %c - Notes
+
+Examples:
+
+```python
+from cooklang_py import Cookware
+cw = Cookware(raw='', name='pot', quantity='5%quart', notes='with a cover')
+print(format(cw, '%n (%q[%af %ul])'))
+pot (5 quart)
+print(format(cw, '%q %n (%c)'))
+5 qt pot (with a cover)
+print(format(cw, '%n (%q)'))
+pot (5 qt)
+
+```
