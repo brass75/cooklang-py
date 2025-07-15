@@ -212,14 +212,14 @@ class BaseObj:
                             c = next(fs)
                         except StopIteration:
                             return s + str(self.quantity)
-                        format_spec = ''
+                        qformat_spec = ''
                         if c == '[':
                             try:
                                 while (c := next(fs)) != ']':
-                                    format_spec += c
+                                    qformat_spec += c
                             except StopIteration:
-                                return s + f'{self.quantity:{format_spec}}' if self.quantity else ''
-                        s += f'{self.quantity:{format_spec}}' if self.quantity else ''
+                                return s + f'{self.quantity:{qformat_spec}}' if self.quantity else ''
+                        s += (f'{self.quantity:{qformat_spec}}' if self.quantity else '') + (c if c != ']' else '')
                     case _:
                         s += f'%{c}'
             else:
