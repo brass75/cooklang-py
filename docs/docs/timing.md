@@ -37,3 +37,26 @@ class Timing(BaseObj):
     prefix = '~'
     supports_notes = False
 ```
+
+#### Dunder implementations
+
+`__str__` - The string will be formatted `<name> (<quantity>)`. This is the equivaluent to using the 
+`%n (%q)` `format_spec`.
+
+`__format__` - String Formatting.
+The following options are available for format_spec:
+
+- %n - Name
+- %q - Quantity
+- %q[<format>] - Quantity as format
+
+Examples:
+
+```python
+from cooklang_py iport Timing
+tm = Timing('', name='bake', quantity='20%minutes')
+print(format(tm, '%n %q[%a %us]'))
+bake 20 m
+print(format(tm, '%n %q[%a %ul]'))
+bake 20 minutes
+```
