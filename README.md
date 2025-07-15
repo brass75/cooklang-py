@@ -61,8 +61,6 @@ inherit from the `BaseObj`. They all have the following 3 attributes:
 
 - `name` - the name of the item (i.e. pot, carrot, etc.)
 - `quantity` - how much is needed
-  - For `Ingredient` quantity defaults to "some" if it is not set.
-  - For `Cookware` quantity defaults to 1 if it is not set.
 - `notes` - any notes for the item (i.e. "greased", "peeled and diced", etc.)
   - `Timings` do not have notes per the Cooklang specification.
 
