@@ -69,18 +69,22 @@ def test_formatting_no_unit_or_notes():
     ing = Ingredient(raw='@eggs{3}', name='eggs', quantity='3')
     assert f'{ing:%q[%af %us] %n (%c)}' == '3 eggs ()'
 
+
 def test_quantity_string_addition():
     """Test string addition"""
     assert 'Testing: ' + Quantity('1%cup') == 'Testing: 1 c'
+
 
 def test_quantity_quantity_addition():
     """Test quantity addition"""
     with pytest.raises(TypeError):
         Quantity('1%cup') + Quantity('1%cup')
 
+
 def test_baseobj_string_addition():
     """Test string addition"""
     assert 'Testing: ' + Ingredient('', name='flour', quantity='1%cup') == 'Testing: flour (1 c)'
+
 
 def test_baseobj_baseobj_addition():
     """Test quantity addition"""
