@@ -1,0 +1,29 @@
+site_name: cooklang-py
+site_url: https://cooklang-py.readthedocs.io
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Objects:
+      - base_object.md
+      - ingredient.md
+      - cookware.md
+      - timing.md
+      - quantity.md
+      - step.md
+  - Recipe:
+      - recipe.md
+      - metadata.md
+watch:
+  - ../src/cooklang_py
+plugins:
+- search
+- autorefs
+- mkdocstrings:
+    handlers:
+      python:
+        paths: [../src]
+        options:
+          show_source: false
+          show_root_full_path: false
+          show_category_heading: true
