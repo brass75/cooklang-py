@@ -16,7 +16,7 @@ pip install cooklang-py
 
 ## Documentation
 
-Full documentation is available at [docs/docs/index.md](docs/docs/index.md)
+Full documentation is available at [https://cooklang-py.readthedocs.io/](https://cooklang-py.readthedocs.io/)
 
 ## `Recipe`
 

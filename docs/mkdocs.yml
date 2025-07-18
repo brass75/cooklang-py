@@ -1,5 +1,5 @@
 site_name: cooklang-py
-site_url: https://cooklang-py.readthedocs.io
+site_url: https://cooklang-py.readthedocs.io/
 theme:
   name: material
 nav:
