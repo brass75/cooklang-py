@@ -1,6 +1,6 @@
 [project]
 name = "cooklang_py"
-version = "0.3.0"
+version = "0.3.1"
 description = "Python Parser for Cooklang"
 readme = "README.md"
 authors = [{name = "Dan Shernicoff", email = "dan@brassnet.biz"}]
@@ -25,6 +25,7 @@ dev = [
 [project.urls]
 homepage = "https://github.com/brass75/cooklang-py"
 Repository = "https://github.com/brass75/cooklang-py"
+documentation = "https://cooklang-py.readthedocs.io/"
 cooklang = "https://cooklang.org"
 
 [tool.ruff]
