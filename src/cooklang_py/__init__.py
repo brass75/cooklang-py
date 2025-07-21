@@ -1,4 +1,5 @@
-from .base_objects import BaseObj, Cookware, Ingredient, Quantity, Timing
+from .base_objects import BaseObj, Cookware, Ingredient, Timing
+from .quantity import Quantity
 from .recipe import PREFIXES, Metadata, Recipe, Step
 from .utils import WholeFraction
 
