@@ -82,10 +82,28 @@ def test_quantity_quantity_addition_invalid_amount():
 def test_quantity_multiplication(quantity, other, expected):
     assert (quantity * other).amount == expected
 
-def test_quqantity_multiplication_invalid_amount():
+def test_quantity_multiplication_invalid_amount():
     with pytest.raises(ValueError):
         Quantity('1 1/2%cup') * (-1)
 
-def test_quqantity_multiplication_invalid_operand():
+def test_quantity_multiplication_invalid_operand():
     with pytest.raises(TypeError):
         Quantity('1 1/2%cup') * Quantity('1 1/2%cup')
+
+@pytest.mark.parametrize('quantity, other, expected',
+                         [
+(Quantity('3%cup'), 2, 1.5),
+(Quantity('3%cup'), 1.5, 2),
+                             (Quantity('3%cup'), Fraction(3,2), 2),
+                         ]
+)
+def test_quantity_division(quantity, other, expected):
+    assert (quantity / other).amount == expected
+
+def test_quantity_division_invalid_amount():
+    with pytest.raises(ValueError):
+        Quantity('1 1/2%cup') / (-1)
+
+def test_quantity_division_invalid_operand():
+    with pytest.raises(TypeError):
+        Quantity('1 1/2%cup') / Quantity('1 1/2%cup')

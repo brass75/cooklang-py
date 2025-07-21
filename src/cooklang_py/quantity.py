@@ -191,3 +191,23 @@ class Quantity:
                 return q
             case _:
                 raise TypeError(f'Multiplication of {self.__class__.__name__} cannot be performed with {type(other)}')
+
+    def __truediv__(self, other):
+        """
+        Quantity division
+
+        Divides a numeric with a quantity
+        :param other: The value to add to the Quantity
+        :returns: Quantity
+        :raises: ValueError if `other` is a Quantity with a different unit or numeric is < 0
+        :raises: TypeError if `other` is not numeric or Quantity
+        """
+        match other:
+            case int() | float() | Fraction():
+                if other <= 0:
+                    raise ValueError(f'Invalid value [{other}] - must be greater than zero.')
+                q = eval(repr(self))
+                q.amount /= other
+                return q
+            case _:
+                raise TypeError(f'Multiplication of {self.__class__.__name__} cannot be performed with {type(other)}')
