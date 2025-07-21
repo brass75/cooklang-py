@@ -2,7 +2,8 @@
 
 import pytest
 
-from cooklang_py import Ingredient, Quantity
+from cooklang_py import Ingredient
+
 
 @pytest.mark.parametrize(
     'fmt_spec, expected',
@@ -29,6 +30,7 @@ def test_formatting_no_unit_or_notes():
     """Test formatting with name and amount"""
     ing = Ingredient(raw='@eggs{3}', name='eggs', quantity='3')
     assert f'{ing:%q[%af %us] %n (%c)}' == '3 eggs ()'
+
 
 def test_baseobj_string_addition():
     """Test string addition"""

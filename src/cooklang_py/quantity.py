@@ -49,7 +49,7 @@ class Quantity:
         raw = str(self.amount)
         if self.unit:
             raw += f'%{self.unit}'
-        return f"{self.__class__.__name__}(qstr={repr(raw)})"
+        return f'{self.__class__.__name__}(qstr={repr(raw)})'
 
     def __hash__(self) -> int:
         return hash((self.amount, self.unit))
