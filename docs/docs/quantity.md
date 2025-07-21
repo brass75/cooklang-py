@@ -77,3 +77,12 @@ print(format(q, '%af %us'))
 print(format(q, '%u (%a)'))
 cup(1 3/4)
 ```
+
+### Quantity Math
+
+The `Quantity` objects supports the following arithmetic operations:
+
+- Addition. Quantity objects with the same unit can be added to one another. In addition,
+numeric (float, int, and Fraction) values can be added to the Quantity's amount.
+- Multiplication - Quantities can be multiplied by numeric (float, int, and Fraction) values.
+- Division - Quantities can be divided by numeric (float, int, and Fraction) values values.
