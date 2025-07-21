@@ -2,6 +2,7 @@
 
 import re
 from decimal import Decimal, InvalidOperation
+from fractions import Fraction
 
 from .const import LONG_TO_SHORT_MAPPINGS, NOTE_PATTERN, QUANTITY_PATTERN, SHORT_TO_LONG_MAPPINGS
 from .utils import WholeFraction
@@ -133,6 +134,50 @@ class Quantity:
             raise TypeError(f'Cannot add {self} to {other.__class__.__name__}')
         return f'{other}{self}'
 
+    def __add__(self, other):
+        """
+        Quantity addition
+
+        Adds either 2 quantities of the same unit or a numeric to a quantity
+        :param other: The value to add to the Quantity
+        :returns: Quanttiy
+        :raises: ValueError if `other` is a Quantity with a different unit or numeric is < 0
+        :raises: TypeError if `other` is not numeric or Quantity
+        """
+        match other:
+            case int() | float():
+                if other < 0:
+                    raise ValueError(f'Invalid value [{other}] - must be greater than zero.')
+                q = self.__class__(self._raw)
+                q.amount += other
+                match self.amount:
+                    case Decimal():
+                        q.amount = Decimal(q.amount)
+                    case Fraction():
+                        q.amount = WholeFraction(q.amount)
+                return q
+            case Fraction():
+                if other < 0:
+                    raise ValueError(f'Invalid value [{other}] - must be greater than zero.')
+                q = self.__class__(self._raw)
+                if isinstance(self.amount, Decimal):
+                    q.amount = self.amount + (other.numerator / other.denominator)
+                    return q
+                q.amount += other
+                return q
+            case Decimal():
+                if other < 0:
+                    raise ValueError(f'Invalid value [{other}] - must be greater than zero.')
+                q = self.__class__(self._raw)
+                if isinstance(self.amount, Fraction):
+                    q.amount = WholeFraction(self.amount + float(other))
+                    return q
+                q.amount += other
+                return q
+            case self.__class__():
+                if self.unit != other.unit:
+                    raise ValueError(f"Can't add quantity with type {other.unit} to quantity with type {self.unit}")
+                return self + other.amount
 
 class BaseObj:
     """Base Object for Ingredient, Cookware, and Timing"""
