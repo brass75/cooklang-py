@@ -66,7 +66,7 @@ class Recipe:
                          more of the base objects.
         """
         self._raw = recipe
-        metadata, body = frontmatter.parse(re.sub(r':(?=\S)', ': ', recipe))
+        metadata, body = frontmatter.parse(re.sub(r':(?=[^/\s])', ': ', recipe))
         self.metadata = Metadata(metadata)
         if not body:
             raise ValueError('No body found in recipe!')
