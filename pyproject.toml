@@ -1,6 +1,6 @@
 [project]
 name = "cooklang_py"
-version = "0.3.1"
+version = "0.3.2"
 description = "Python Parser for Cooklang"
 readme = "README.md"
 authors = [{name = "Dan Shernicoff", email = "dan@brassnet.biz"}]
