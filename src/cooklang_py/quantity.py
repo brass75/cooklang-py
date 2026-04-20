@@ -66,69 +66,32 @@ class Quantity:
         """
         if not format_spec:
             return str(self)
-        s = ''
-        fs = iter(format_spec)
-        c = next(fs)
-        spaces = 0
-        while True:
-            if c == '%':
+
+        def expand_format_specifier(match: re.Match[str]) -> str:
+            spaces = match.group(1)
+            placeholder = match.group(2)
+
+            if placeholder.startswith('u') and not self.unit:
+                spaces = ''
+
+            if placeholder == 'af':
                 try:
-                    c = next(fs)
-                except StopIteration:
-                    return s
-                match c:
-                    case 'a':
-                        try:
-                            c = next(fs)
-                        except StopIteration:
-                            return s + str(self.amount) if self.amount else ''
-                        match c:
-                            case 'f':
-                                try:
-                                    f = WholeFraction(self.amount) if self.amount else ''
-                                    s += str(f)
-                                    spaces = 0
-                                except ValueError:
-                                    s += str(self.amount if self.amount else '')
-                                    spaces = 0
-                            case '%':
-                                s += str(self.amount if self.amount else '')
-                                spaces = 0
-                                continue
-                            case _:
-                                s += str(self.amount) + c
-                                spaces = 0
-                    case 'u':
-                        try:
-                            c = next(fs)
-                        except StopIteration:
-                            return s + self.unit if self.unit else ''
-                        if not self.unit and spaces:
-                            s = s[: spaces * -1]
-                        match c:
-                            case 's':
-                                s += LONG_TO_SHORT_MAPPINGS.get(self.unit, self.unit if self.unit else '')
-                            case 'l':
-                                s += SHORT_TO_LONG_MAPPINGS.get(self.unit, self.unit if self.unit else '')
-                            case '%':
-                                s += self.unit if self.unit else ''
-                                continue
-                            case _:
-                                s += self.unit if self.unit else '' + c
-                    case _:
-                        s += f'%{c}'
-            else:
-                s += c
-                if c == ' ':
-                    spaces += 1
-                else:
-                    spaces = 0
-            try:
-                c = next(fs)
-            except StopIteration:
-                return s
-            continue
-        return s
+                    f = WholeFraction(self.amount) if self.amount else ''
+                    return spaces + str(f)
+                except ValueError:
+                    return spaces + str(self.amount if self.amount else '')
+            if placeholder == 'a':
+                return spaces + str(self.amount) if self.amount else ''
+            if placeholder == 'ul':
+                return spaces + SHORT_TO_LONG_MAPPINGS.get(self.unit, self.unit if self.unit else '')
+            if placeholder == 'us':
+                return spaces + LONG_TO_SHORT_MAPPINGS.get(self.unit, self.unit if self.unit else '')
+            if placeholder == 'u':
+                return spaces + self.unit if self.unit else ''
+
+            return match.group(0)
+
+        return re.sub(r'( *)%(af|a|ul|us|u)', expand_format_specifier, format_spec)
 
     def __radd__(self, other) -> str:
         if not isinstance(other, str):
