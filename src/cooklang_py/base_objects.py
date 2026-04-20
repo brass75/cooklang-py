@@ -69,44 +69,21 @@ class BaseObj:
         """
         if not format_spec:
             return str(self)
-        s = ''
-        fs = iter(format_spec)
-        c = next(fs)
-        while True:
-            if c == '%':
-                try:
-                    c = next(fs)
-                except StopIteration:
-                    return s
-                match c:
-                    case 'c':
-                        if self.notes:
-                            s += self.notes
-                    case 'n':
-                        s += self.name
-                    case 'q':
-                        try:
-                            c = next(fs)
-                        except StopIteration:
-                            return s + str(self.quantity)
-                        qformat_spec = ''
-                        if c == '[':
-                            try:
-                                while (c := next(fs)) != ']':
-                                    qformat_spec += c
-                            except StopIteration:
-                                return s + f'{self.quantity:{qformat_spec}}' if self.quantity else ''
-                        s += (f'{self.quantity:{qformat_spec}}' if self.quantity else '') + (c if c != ']' else '')
-                    case _:
-                        s += f'%{c}'
-            else:
-                s += c
-            try:
-                c = next(fs)
-            except StopIteration:
-                return s
-            continue
-        return s
+
+        def expand_format_specifier(match: re.Match[str]) -> str:
+            char = match.group(1)
+            spec = match.group(2)
+            if char == 'c':
+                return self.notes if self.notes else ''
+            if char == 'n':
+                return self.name
+            if char == 'q':
+                if not spec or not self.quantity:
+                    return str(self.quantity)
+                return f'{self.quantity:{spec}}'
+            return match.group(0)
+
+        return re.sub(r'%(.)(?:(?<=[q])\[([^]]*)(?:\]|$))?', expand_format_specifier, format_spec)
 
     @classmethod
     def factory(cls, raw: str):
