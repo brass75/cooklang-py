@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.10"
 
 [options]
-exclude-newer = "2026-04-16T01:06:26.253475Z"
+exclude-newer = "2026-04-16T01:25:34.358433Z"
 exclude-newer-span = "P5D"
 
 [[package]]
@@ -38,7 +38,7 @@ wheels = [
 
 [[package]]
 name = "cooklang-py"
-version = "0.3.2"
+version = "0.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "python-frontmatter" },
