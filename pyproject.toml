@@ -13,7 +13,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "coverage>=7.9.1",
+    "coverage==7.13.5",
     "mkdocs>=1.6.1",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
@@ -27,6 +27,9 @@ homepage = "https://github.com/brass75/cooklang-py"
 Repository = "https://github.com/brass75/cooklang-py"
 documentation = "https://cooklang-py.readthedocs.io/"
 cooklang = "https://cooklang.org"
+
+[tool.uv]
+exclude-newer = "5 days"
 
 [tool.ruff]
 target-version = "py312"

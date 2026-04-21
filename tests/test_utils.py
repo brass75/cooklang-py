@@ -13,6 +13,7 @@ from cooklang_py import WholeFraction
         ('1.75', '1 3/4'),
         ('-.5', '-1/2'),
         ('1', '1'),
+        ('0', '0'),
     ],
 )
 def test_whole_fraction(input_string, expected):

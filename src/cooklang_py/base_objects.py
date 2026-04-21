@@ -56,7 +56,7 @@ class BaseObj:
         return self.name
 
     def __hash__(self) -> int:
-        return hash(tuple(getattr(self, attr) for attr in ('name', '_parsed_quantity', 'notes')))
+        return hash(tuple(getattr(self, attr) for attr in ('name', '_parsed_quantity', 'notes')))  # pragma: no cover
 
     def __format__(self, format_spec: str) -> str:
         """
@@ -71,8 +71,7 @@ class BaseObj:
             return str(self)
 
         def expand_format_specifier(match: re.Match[str]) -> str:
-            char = match.group(1)
-            spec = match.group(2)
+            char, spec = match.groups()
             if char == 'c':
                 return self.notes if self.notes else ''
             if char == 'n':
@@ -80,10 +79,10 @@ class BaseObj:
             if char == 'q':
                 if not spec or not self.quantity:
                     return str(self.quantity)
-                return f'{self.quantity:{spec}}'
-            return match.group(0)
+                return format(self.quantity, spec)
+            return match.group(0)  # pragma: no cover
 
-        return re.sub(r'%(.)(?:(?<=[q])\[([^]]*)(?:\]|$))?', expand_format_specifier, format_spec)
+        return re.sub(r'%([cnq])(?:(?<=[q])\[([^]]*)(?:]|$))?', expand_format_specifier, format_spec)
 
     @classmethod
     def factory(cls, raw: str):

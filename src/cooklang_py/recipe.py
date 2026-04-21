@@ -5,7 +5,7 @@ from typing import Any
 
 import frontmatter
 
-from .base_objects import PREFIXES, BaseObj, Cookware, Ingredient
+from .base_objects import PREFIXES, BaseObj, Cookware, Ingredient, Timing
 from .const import METADATA_DISPLAY_MAP, METADATA_MAPPINGS
 
 
@@ -135,6 +135,11 @@ class Step:
         self._sections: list[str | BaseObj] = list()
         self._prefixes: dict[str, type[BaseObj]] = prefixes
         self._parse(line)
+        self.obj_mapping = {
+            'ingredient': Ingredient,
+            'cookware': Cookware,
+            'timing': Timing,
+        }
 
     def __iter__(self):
         yield from self._sections
@@ -181,3 +186,29 @@ class Step:
         :return: The line without comments.
         """
         return re.sub(r'--.*(?:$|\n)|\[-.*?-]', '', line)
+
+    def formatted_string(self, format_options: str | dict[str | type[BaseObj], str] = '') -> str:
+        """
+        Generate a formatted string of the Step object
+
+        :param format_options: Either a string containing the format options to pass to all objects,
+                               or a dictionary where the key is a BaseObj class or the name of the
+                               BaseObj class and the value is the format string to apply
+        :return: Formatted string representation of the Step object
+        """
+        if not format_options:
+            return str(self)
+        _options = dict()
+        match format_options:
+            case dict():
+                for obj, options in format_options.items():
+                    if not isinstance(obj, str):
+                        obj = obj.__name__
+                    if not (obj_type := self.obj_mapping.get(obj.lower())):
+                        raise ValueError(f'Unknown object type: {obj}')
+                    _options[obj_type] = options
+            case str():
+                _options[Ingredient] = format_options
+                _options[Cookware] = format_options
+                _options[Timing] = format_options
+        return ''.join(map(lambda s: format(s, _options.get(s.__class__, '')), self))

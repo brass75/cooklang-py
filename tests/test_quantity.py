@@ -64,20 +64,24 @@ def test_formating(input_str, format_string, expected):
         (Quantity('1.5%cup'), 1.5, 3),
         (Quantity('1.5%cup'), 1, Fraction(5, 2)),
         (Quantity('1.5%cup'), Quantity('1.5%cup'), 3),
+        (Quantity('1%cup'), 1, 2),
     ],
 )
 def test_quantity_addition(quantity, other, expected):
     assert (quantity + other).amount == expected
 
 
-def test_quantity_quantity_addition_different_units():
+@pytest.mark.parametrize(
+    'value',
+    [
+        Quantity('1.5%tbsp'),
+        Fraction('-0.75'),
+        -1,
+    ],
+)
+def test_quantity_quantity_addition_error(value):
     with pytest.raises(ValueError):
-        Quantity('1.5%cup') + Quantity('1.5%tbsp')
-
-
-def test_quantity_quantity_addition_invalid_amount():
-    with pytest.raises(ValueError):
-        Quantity('1.5%cup') + (-1)
+        Quantity('1.5%cup') + value
 
 
 @pytest.mark.parametrize(
@@ -122,3 +126,12 @@ def test_quantity_division_invalid_amount():
 def test_quantity_division_invalid_operand():
     with pytest.raises(TypeError):
         Quantity('1 1/2%cup') / Quantity('1 1/2%cup')
+
+
+def test_quantity_equality_other():
+    assert not (Quantity('1 1/2%cup') == 2)
+
+
+def test_bad_radd():
+    with pytest.raises(TypeError):
+        2 + Quantity('1 1/2%cup')

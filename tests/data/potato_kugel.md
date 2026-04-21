@@ -11,6 +11,8 @@ description: Potato Kugel is a traditional Ashkenazi Jewish recipe. It is often 
 ---
 Preheat the oven to 350°F.
 
+-- Just a comment --
+
 Beat the @eggs{3} until thick.
 
 Stir in the @potatoes{3%cups}(drained and grated), @potato flour/matza meal{1/3%cup},
