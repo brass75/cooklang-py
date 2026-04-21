@@ -13,7 +13,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "coverage>=7.9.1",
+    "coverage==7.13.5",
     "mkdocs>=1.6.1",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
