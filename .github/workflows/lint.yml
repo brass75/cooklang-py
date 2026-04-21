@@ -15,9 +15,9 @@ jobs:
     name: Format and Lint Python
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
       - name: Run Ruff
         run: uv run ruff check . --output-format=github
       - name: Ruff format
@@ -27,7 +27,7 @@ jobs:
     name: Lint Markdown
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Markdown Lint base-files
         uses: DavidAnson/markdownlint-cli2-action@v20
         with:
@@ -35,8 +35,3 @@ jobs:
             *.md
             .github/**/*.md
           config: ./.markdownlint.json
-#      - name: Markdown Lint Docs
-#        uses: DavidAnson/markdownlint-cli2-action@v20
-#        with:
-#          globs: docs/**/*.md
-#          config: docs/.markdownlint.json
