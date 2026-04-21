@@ -2,7 +2,7 @@
 
 import pytest
 
-from cooklang_py import Ingredient
+from cooklang_py import BaseObj, Ingredient, Timing
 
 
 @pytest.mark.parametrize(
@@ -41,3 +41,45 @@ def test_baseobj_baseobj_addition():
     """Test quantity addition"""
     with pytest.raises(TypeError):
         Ingredient('', name='flour', quantity='1%cup') + Ingredient('', name='flour', quantity='1%cup')
+
+
+def test_baseobj_eq():
+    assert not (Ingredient('', name='flour', quantity='1%cup') == 2)
+
+
+def test_repr():
+    assert (
+        repr(Ingredient('', name='flour', quantity='1%cup'))
+        == "Ingredient(raw='', name='flour', quantity='1%cup', notes=None)"
+    )
+
+
+def test_short_string():
+    assert str(Ingredient('', name='flour')) == 'flour'
+
+
+def test_format_no_quantity():
+    assert format(Ingredient('', name='flour'), '%q[%af %us] %n').strip() == 'flour'
+
+
+def test_factory_bad_class():
+    class BadObject(BaseObj):
+        pass
+
+    with pytest.raises(NotImplementedError):
+        BadObject.factory('')
+
+
+def test_factory_bad_raw():
+    with pytest.raises(ValueError):
+        Ingredient.factory('1234')
+
+
+def test_baseobj_baseobj_raddition():
+    """Test quantity addition"""
+    with pytest.raises(TypeError):
+        2 + Ingredient('', name='flour', quantity='1%cup')
+
+
+def test_long_str():
+    assert Timing.factory('~{1.5%hour}').long_str == ' 1.5 h'
