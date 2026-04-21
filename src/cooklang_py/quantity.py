@@ -31,7 +31,7 @@ class Quantity:
                 parts = WholeFraction('/'.join(parts))
                 self.amount = WholeFraction(whole + parts)
             elif '.' in self.amount:
-                self.amount = float(self.amount)
+                self.amount = Decimal(self.amount)
             else:
                 self.amount = int(self.amount)
         except (ValueError, InvalidOperation):
@@ -52,7 +52,7 @@ class Quantity:
         return f'{self.__class__.__name__}(qstr={repr(raw)})'
 
     def __hash__(self) -> int:
-        return hash((self.amount, self.unit))
+        return hash((self.amount, self.unit))  # pragma: no cover
 
     def __format__(self, format_spec: str) -> str:
         """
@@ -89,9 +89,9 @@ class Quantity:
             if placeholder == 'u':
                 return spaces + self.unit if self.unit else ''
 
-            return match.group(0)
+            return match.group(0)  # pragma: no cover
 
-        return re.sub(r'( *)%(af|a|ul|us|u)', expand_format_specifier, format_spec)
+        return re.sub(r'(\s*)%(af|a|ul|us|u)', expand_format_specifier, format_spec)
 
     def __radd__(self, other) -> str:
         if not isinstance(other, str):
@@ -109,13 +109,15 @@ class Quantity:
         :raises: TypeError if `other` is not numeric or Quantity
         """
         match other:
-            case int() | float():
+            case int() | float() | Decimal():
                 if other < 0:
                     raise ValueError(f'Invalid value [{other}] - must be greater than zero.')
                 q = eval(repr(self))
                 match self.amount:
                     case Fraction():
                         q.amount = WholeFraction(q.amount + other)
+                    case Decimal():
+                        q.amount += Decimal(other)
                     case _:
                         q.amount += other
                 return q
