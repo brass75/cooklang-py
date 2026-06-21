@@ -4,6 +4,15 @@ This document will help you get started in contributing to the `cooklang-py` cod
 `cooklang-py` is an open source project and contributions are welcome. Please follow
 these guidlines to help you with your contributions.
 
+## LLM Contributions
+
+Contributions that are authored by LLMs, agents, or individuals using LLMs are not welcome in this repository.
+If the maintainers have reason to believe that a PR was created with LLM generated code it will be closed
+immediately.
+
+The maintainers of this project use the `gh-profiler` tool to assist in determining whether a PR is made by
+a human or with LLM generated code.
+
 ## Before you Contribute
 
 When suggesting a feature, consider the following:
