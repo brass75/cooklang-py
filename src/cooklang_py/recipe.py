@@ -159,11 +159,19 @@ class Step:
         if not (section := self._remove_comments(line)):
             return
         self._sections.clear()
-        while match := re.search(r'(?<!\\)[@#~][\S]', section):
+        prefix_pattern = '|'.join(re.escape(prefix) for prefix in sorted(self._prefixes, key=len, reverse=True))
+        if not prefix_pattern:
+            self._sections.append(section)
+            return
+        object_pattern = re.compile(rf'(?<!\\)(?:{prefix_pattern})(?=\S)')
+        while match := object_pattern.search(section):
             if section[: match.start()].strip():
                 self._sections.append(section[: match.start()])
             section = section[match.start() :]
-            obj = self._prefixes[section[0]].factory(section)
+            prefix = match.group()
+            next_match = object_pattern.search(section, len(prefix))
+            raw_section = section[: next_match.start()] if next_match else section
+            obj = self._prefixes[prefix].factory(raw_section)
             self._sections.append(obj)
             section = section.removeprefix(obj.raw)
             match obj:

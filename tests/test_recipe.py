@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from cooklang_py import Cookware, Ingredient, Recipe, Step, Timing
+from cooklang_py import BaseObj, Cookware, Ingredient, Recipe, Step, Timing
 
 
 @pytest.mark.parametrize(
@@ -106,3 +106,19 @@ def test_steps_repr(step):
         "quantity='1.5%qt', notes=None), ', and bake until browned, approximately ', "
         "Timing(raw='~{1%hour}', name='', quantity='1%hour'), '.']"
     )
+
+
+def test_step_uses_custom_prefixes():
+    class Note(BaseObj):
+        prefix = '!'
+        supports_notes = False
+
+    prefixes = {'@': Ingredient, '#': Cookware, '~': Timing, '!': Note}
+
+    step = Step('Mix @flour!important in #bowl', prefixes)
+    sections = list(step)
+
+    assert [type(section) for section in sections] == [str, Ingredient, Note, str, Cookware]
+    assert step.ingredients == [Ingredient('@flour', name='flour')]
+    assert step.cookware == [Cookware('#bowl', name='bowl')]
+    assert sections[2].raw == '!important'
