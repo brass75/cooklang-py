@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from cooklang_py import Cookware, Ingredient, Recipe, Step, Timing
+from cooklang_py import BaseObj, Cookware, Ingredient, Recipe, Step, Timing
 
 
 @pytest.mark.parametrize(
@@ -96,6 +96,26 @@ def test_step_formatted_string_error(step):
     """Test that unrecognized key raises error"""
     with pytest.raises(ValueError):
         step.formatted_string({'unknown': ''})
+
+
+def test_step_uses_custom_prefixes():
+    class Temperature(BaseObj):
+        prefix = '$'
+
+    prefixes = {
+        '@': Ingredient,
+        '#': Cookware,
+        '~': Timing,
+        '$': Temperature,
+    }
+
+    step = Step('Warm $syrup before adding @flour.', prefixes)
+    sections = list(step)
+
+    assert len(sections) == 5
+    assert isinstance(sections[1], Temperature)
+    assert sections[1].name == 'syrup'
+    assert isinstance(sections[3], Ingredient)
 
 
 def test_steps_repr(step):
