@@ -17,8 +17,8 @@ class BaseObj:
         raw: str,
         name: str,
         *,
-        quantity: str = None,
-        notes: str = None,
+        quantity: str | None = None,
+        notes: str | None = None,
     ):
         """
         Constructor for the BaseObj class
@@ -103,10 +103,13 @@ class BaseObj:
         note_pattern = NOTE_PATTERN if cls.supports_notes else ''
         if match := re.search(rf'(?P<name>.*?){QUANTITY_PATTERN}{note_pattern}', raw):
             return cls(f'{cls.prefix}{raw[: match.end(match.lastgroup) + 1]}', **match.groupdict())
-        if note_pattern and (match := re.search(rf'^(P<name>[\S]+){note_pattern}', raw)):
+        note_pattern = note_pattern.removesuffix(
+            '?'
+        )  # Remove the ? from the end of the pattern to facilitate mathing with note.
+        if note_pattern and (match := re.search(rf'^(?P<name>.*?){note_pattern}', raw)):
             return cls(f'{cls.prefix}{raw[: match.end(match.lastgroup) + 1]}', **match.groupdict())
         name = raw.split()[0]
-        name = re.sub(r'\W+$', '', name) or name
+        name = re.sub(r'\W+\Z', '', name) or name
         return cls(f'{cls.prefix}{name}', name=name)
 
     def __radd__(self, other) -> str:
@@ -143,8 +146,4 @@ class Timing(BaseObj):
         return str(self)
 
 
-PREFIXES = {
-    '@': Ingredient,
-    '#': Cookware,
-    '~': Timing,
-}
+PREFIXES = {cls.prefix: cls for cls in [Ingredient, Timing, Cookware]}
