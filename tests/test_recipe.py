@@ -1,8 +1,9 @@
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
 
-from cooklang_py import Cookware, Ingredient, Recipe, Step, Timing
+from cooklang_py import PREFIXES, BaseObj, Cookware, Ingredient, Recipe, Step, Timing
 
 
 @pytest.mark.parametrize(
@@ -106,3 +107,23 @@ def test_steps_repr(step):
         "quantity='1.5%qt', notes=None), ', and bake until browned, approximately ', "
         "Timing(raw='~{1%hour}', name='', quantity='1%hour'), '.']"
     )
+
+
+class AltIngredient(BaseObj):
+    prefix = '!'
+    supports_notes = False
+
+
+def test_step_modified_prefixes():
+    prefixes = deepcopy(PREFIXES)
+    prefixes.update({AltIngredient.prefix: AltIngredient})
+    text = '!potatoes{3}(drained and grated)'
+    step = Step(text, prefixes=prefixes)
+    assert step._sections[0] == AltIngredient('', name='potatoes', quantity='3')
+    assert step._sections[1] == '(drained and grated)'
+
+
+def test_step_no_quantity():
+    text = '@potatoes(diced)'
+    step = Step(text)
+    assert step._sections[0] == Ingredient('', 'potatoes', notes='diced')

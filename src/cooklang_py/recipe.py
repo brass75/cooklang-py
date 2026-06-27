@@ -75,7 +75,7 @@ class Recipe:
         self.cookware = list()
         for line in re.split(r'\n{2,}', body):
             line = re.sub(r'\s+', ' ', line)
-            if step := Step(line, prefixes):
+            if step := Step(line, prefixes=prefixes):
                 self.steps.append(step)
                 self.ingredients.extend(step.ingredients)
                 self.cookware.extend(step.cookware)
@@ -119,7 +119,7 @@ class Recipe:
 
 
 class Step:
-    def __init__(self, line: str, prefixes: dict = PREFIXES):
+    def __init__(self, line: str, *, prefixes: dict = PREFIXES):
         """
         Parse a line into its sections and objects
 
@@ -159,7 +159,8 @@ class Step:
         if not (section := self._remove_comments(line)):
             return
         self._sections.clear()
-        while match := re.search(r'(?<!\\)[@#~][\S]', section):
+        prefix_pattern = rf'(?:{"|".join(map(re.escape, self._prefixes))})'
+        while match := re.search(rf'(?<!\\){prefix_pattern}\S', section):
             if section[: match.start()].strip():
                 self._sections.append(section[: match.start()])
             section = section[match.start() :]
