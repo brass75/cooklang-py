@@ -114,7 +114,7 @@ class Step:
                 case Cookware():
                     self.cookware.append(obj)
                 case _:
-                    raise RuntimeError(f'Unknown object type {obj.__class__.__name__}')
+                    pass
         if section.strip():
             self._sections.append(section)
 
