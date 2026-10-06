@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
       - name: Determine target login and issue number
         id: meta
         env:
@@ -31,7 +31,7 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           PR_USER_LOGIN: ${{ github.event.pull_request.user.login }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          
+
         run: |
           if [ "$EVENT_NAME" = "issues" ]; then
             echo "login=$ISSUE_USER_LOGIN" >> "$GITHUB_OUTPUT"
