@@ -1,9 +1,9 @@
 """Constants"""
 
-QUANTITY_PATTERN = r'(?<!\\){(?P<quantity>.*?)}'
-NOTE_PATTERN = r'(?:\((?P<notes>.*)\))?'
+QUANTITY_PATTERN: str = r'(?<!\\){(?P<quantity>.*?)}'
+NOTE_PATTERN: str = r'(?:\((?P<notes>.*)\))?'
 
-LONG_TO_SHORT_MAPPINGS = {
+LONG_TO_SHORT_MAPPINGS: dict[str, str] = {
     'teaspoon': 'tsp',
     'tablespoon': 'tbsp',
     'teaspoons': 'tsp',
@@ -34,9 +34,9 @@ LONG_TO_SHORT_MAPPINGS = {
     'seconds': 's',
 }
 
-SHORT_TO_LONG_MAPPINGS = {v: k for k, v in LONG_TO_SHORT_MAPPINGS.items()}
+SHORT_TO_LONG_MAPPINGS: dict[str, str] = {v: k for k, v in LONG_TO_SHORT_MAPPINGS.items()}
 
-METADATA_MAPPINGS = {
+METADATA_MAPPINGS: dict[str, str] = {
     'source': 'source.name',
     'author': 'source.author',
     'serves': 'servings',
@@ -52,7 +52,7 @@ METADATA_MAPPINGS = {
     'introduction': 'description',
 }
 
-METADATA_DISPLAY_MAP = {
+METADATA_DISPLAY_MAP: dict[str, str] = {
     'source.name': 'Recipe from',
     'source.author': 'Recipe author',
     'source.url': 'Recipe URL',

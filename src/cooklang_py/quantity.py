@@ -1,6 +1,7 @@
 import re
 from decimal import Decimal, InvalidOperation
 from fractions import Fraction
+from typing import Any, Self, override
 
 from .const import LONG_TO_SHORT_MAPPINGS, SHORT_TO_LONG_MAPPINGS
 from .utils import WholeFraction
@@ -15,8 +16,10 @@ class Quantity:
 
         :param qstr: The quantity string
         """
-        self._raw = qstr
-        self.unit = ''
+        self._raw: str = qstr
+        self.unit: str = ''
+        self.amount: str | Decimal | int | WholeFraction
+
         if '%' in qstr:
             self.amount, self.unit = map(str.strip, qstr.split('%'))
         else:
@@ -37,23 +40,28 @@ class Quantity:
         except (ValueError, InvalidOperation):
             pass
 
-    def __eq__(self, other) -> bool:
+    @override
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Quantity):
             return False
         return self.amount == other.amount and self.unit == other.unit
 
+    @override
     def __str__(self) -> str:
         return f'{self:%a %us}'.strip()
 
+    @override
     def __repr__(self) -> str:
         raw = str(self.amount)
         if self.unit:
             raw += f'%{self.unit}'
         return f'{self.__class__.__name__}(qstr={repr(raw)})'
 
+    @override
     def __hash__(self) -> int:
         return hash((self.amount, self.unit))  # pragma: no cover
 
+    @override
     def __format__(self, format_spec: str) -> str:
         """
         Return the quantity based on the format spec
@@ -93,12 +101,12 @@ class Quantity:
 
         return re.sub(r'(\s*)%(af|a|ul|us|u)', expand_format_specifier, format_spec)
 
-    def __radd__(self, other) -> str:
+    def __radd__(self, other: Any) -> str:
         if not isinstance(other, str):
             raise TypeError(f'Cannot add {self} to {other.__class__.__name__}')
         return f'{other}{self}'
 
-    def __add__(self, other):
+    def __add__(self, other: Any) -> Self:
         """
         Quantity addition
 
@@ -112,7 +120,7 @@ class Quantity:
             case int() | float() | Decimal():
                 if other < 0:
                     raise ValueError(f'Invalid value [{other}] - must be greater than zero.')
-                q = eval(repr(self))
+                q: Self = eval(repr(self))
                 match self.amount:
                     case Fraction():
                         q.amount = WholeFraction(q.amount + other)
@@ -124,7 +132,7 @@ class Quantity:
             case Fraction():
                 if other < 0:
                     raise ValueError(f'Invalid value [{other}] - must be greater than zero.')
-                q = eval(repr(self))
+                q: Self = eval(repr(self))
                 if isinstance(self.amount, Decimal):
                     q.amount = self.amount + Decimal(other.numerator / other.denominator)
                     return q
@@ -137,7 +145,7 @@ class Quantity:
             case _:
                 raise TypeError(f'Unable to add object of type {type(other)} to {self.__class__.__name__}')
 
-    def __mul__(self, other):
+    def __mul__(self, other: Any) -> Self:
         """
         Quantity multiplication
 
@@ -157,7 +165,7 @@ class Quantity:
             case _:
                 raise TypeError(f'Multiplication of {self.__class__.__name__} cannot be performed with {type(other)}')
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Any) -> Self:
         """
         Quantity division
 
@@ -175,4 +183,4 @@ class Quantity:
                 q.amount /= other
                 return q
             case _:
-                raise TypeError(f'Multiplication of {self.__class__.__name__} cannot be performed with {type(other)}')
+                raise TypeError(f'Division of {self.__class__.__name__} cannot be performed with {type(other)}')

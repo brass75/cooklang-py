@@ -1,6 +1,6 @@
-from .base_objects import BaseObj, Cookware, Ingredient, Timing
+from .base_objects import PREFIXES, BaseObj, Cookware, Ingredient, Timing
 from .quantity import Quantity
-from .recipe import PREFIXES, Metadata, Recipe, Step
+from .recipe import Metadata, Recipe, Step
 from .utils import WholeFraction
 
 __all__ = [
