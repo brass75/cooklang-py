@@ -1,9 +1,11 @@
 """Utility classes and functions"""
 
 from fractions import Fraction
+from typing import override
 
 
 class WholeFraction(Fraction):
+    @override
     def __str__(self):
         whole, remainder = divmod(abs(self.numerator), self.denominator)
         part = Fraction(remainder, self.denominator)

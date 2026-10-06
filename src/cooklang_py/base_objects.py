@@ -1,6 +1,7 @@
 """Base Object for Ingredient, Cookware, and Timing"""
 
 import re
+from typing import Any, Literal, override
 
 from .const import NOTE_PATTERN, QUANTITY_PATTERN
 from .quantity import Quantity
@@ -9,8 +10,8 @@ from .quantity import Quantity
 class BaseObj:
     """Base Object for Ingredient, Cookware, and Timing"""
 
-    prefix = None
-    supports_notes = True
+    prefix: str = ''
+    supports_notes: bool = True
 
     def __init__(
         self,
@@ -28,17 +29,19 @@ class BaseObj:
         :param quantity: The quantity as described in the raw string
         :param notes: Notes from the raw string
         """
-        self.raw = raw
-        self.name = name.strip()
-        self._quantity = quantity.strip() if quantity and quantity.strip() else None
-        self.notes = notes
-        self._parsed_quantity = Quantity(self._quantity) if self._quantity else ''
+        self.raw: str = raw
+        self.name: str = name.strip()
+        self._quantity: str | None = quantity.strip() if quantity and quantity.strip() else None
+        self.notes: str | None = notes
+        self._parsed_quantity: Quantity | Literal[''] = Quantity(self._quantity) if self._quantity else ''
 
-    def __eq__(self, other) -> bool:
+    @override
+    def __eq__(self, other: Any) -> bool:
         if not (isinstance(other, BaseObj)):
             return False
         return all(getattr(self, attr) == getattr(other, attr) for attr in ('name', '_parsed_quantity', 'notes'))
 
+    @override
     def __repr__(self) -> str:
         s = f'{self.__class__.__name__}(raw={self.raw!r}, name={self.name!r}, quantity={self._quantity!r}'
         if self.__class__.supports_notes:
@@ -49,15 +52,18 @@ class BaseObj:
     def quantity(self) -> Quantity | str:
         return self._parsed_quantity
 
+    @override
     def __str__(self) -> str:
         """Short version of the formatted string"""
         if self.quantity:
             return f'{self.name} ({self.quantity})'.strip()
         return self.name
 
+    @override
     def __hash__(self) -> int:
         return hash(tuple(getattr(self, attr) for attr in ('name', '_parsed_quantity', 'notes')))  # pragma: no cover
 
+    @override
     def __format__(self, format_spec: str) -> str:
         """
         Format the string
@@ -112,7 +118,7 @@ class BaseObj:
         name = re.sub(r'\W+\Z', '', name) or name
         return cls(f'{cls.prefix}{name}', name=name)
 
-    def __radd__(self, other) -> str:
+    def __radd__(self, other: Any) -> str:
         if not isinstance(other, str):
             raise TypeError(f'Cannot add {self} to {other.__class__.__name__}')
         return f'{other}{self}'
@@ -121,23 +127,24 @@ class BaseObj:
 class Ingredient(BaseObj):
     """Ingredient"""
 
-    prefix = '@'
-    supports_notes = True
+    prefix: str = '@'
+    supports_notes: bool = True
 
 
 class Cookware(BaseObj):
     """Cookware"""
 
-    prefix = '#'
-    supports_notes = True
+    prefix: str = '#'
+    supports_notes: bool = True
 
 
 class Timing(BaseObj):
     """Timing"""
 
-    prefix = '~'
-    supports_notes = False
+    prefix: str = '~'
+    supports_notes: bool = False
 
+    @override
     def __str__(self) -> str:
         return f'{self.name.strip()} {str(self.quantity).strip()}'
 
@@ -146,4 +153,4 @@ class Timing(BaseObj):
         return str(self)
 
 
-PREFIXES = {cls.prefix: cls for cls in [Ingredient, Timing, Cookware]}
+PREFIXES: dict[str, type[BaseObj]] = {cls.prefix: cls for cls in [Ingredient, Timing, Cookware]}

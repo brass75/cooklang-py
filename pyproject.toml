@@ -3,25 +3,22 @@ name = "cooklang_py"
 version = "0.0.0"
 description = "Python Parser for Cooklang"
 readme = "README.md"
-authors = [{name = "Dan Shernicoff", email = "dan@brassnet.biz"}]
+authors = [{ name = "Dan Shernicoff", email = "dan@brassnet.biz" }]
 license = "MIT"
 license-files = ["LICENSE.md"]
-requires-python = ">=3.10"
-dependencies = [
-    "python-frontmatter==1.3.0",
-    "pyyaml==6.0.3",
-]
+requires-python = ">=3.12"
+dependencies = ["python-frontmatter==1.3.0", "pyyaml==6.0.3"]
 
 [dependency-groups]
 dev = [
-    "coverage==7.14.2",
-    "mkdocs==1.6.1",
-    "prek==0.4.5",
-    "pygments==2.20.0",
-    "pytest==9.1.1",
-    "pytest-cov==7.1.0",
-    "ruff==0.15.18",
-    "uv-build>=0.7.12,<0.8.0",
+  "coverage==7.14.2",
+  "mkdocs==1.6.1",
+  "prek==0.4.5",
+  "pygments==2.20.0",
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "ruff==0.15.18",
+  "uv-build>=0.7.12,<0.8.0",
 ]
 
 [project.urls]
@@ -38,22 +35,20 @@ target-version = "py312"
 # Allow lines to be as long as 120 characters.
 line-length = 120
 lint.select = [
-  "E",   # pycodestyle
-  "F",   # pyflakes
-  "UP",  # pyupgrade
-  "I",   # imports
+  "E",  # pycodestyle
+  "F",  # pyflakes
+  "UP", # pyupgrade
+  "I",  # imports
 ]
 
 
-lint.ignore = [
-]
+lint.ignore = []
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 lint.fixable = ["ALL"]
 lint.unfixable = []
 
-exclude = [
-]
+exclude = []
 
 [tool.ruff.format]
 quote-style = "single"

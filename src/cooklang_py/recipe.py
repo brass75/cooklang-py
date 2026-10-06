@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import re
 from collections.abc import Generator
 from os import PathLike
-from typing import Any
+from typing import Any, override
 
 import frontmatter
 
@@ -12,20 +14,21 @@ from .const import METADATA_DISPLAY_MAP, METADATA_MAPPINGS
 class Metadata:
     """Recipe Metadata Class"""
 
-    def __init__(self, metadata: dict):
+    def __init__(self, metadata: dict[str, Any]):
         """
         Initialize the Metadata class
 
         :param metadata: Dictionary of metadata
         """
-        self._parsed = {k.strip(): v for k, v in metadata.items()}
-        self._mapped = {METADATA_MAPPINGS.get(k.lower(), k.lower()): v for k, v in self._parsed.items()}
+        self._parsed: dict[str, Any] = {k.strip(): v for k, v in metadata.items()}
+        self._mapped: dict[str, Any] = {METADATA_MAPPINGS.get(k.lower(), k.lower()): v for k, v in self._parsed.items()}
         for attr, value in self._mapped.items():
             setattr(self, attr, value)
 
         for attr, value in self._parsed.items():
             setattr(self, attr, value)
 
+    @override
     def __str__(self) -> str:
         s = ''
         for k, v in self._mapped.items():
@@ -55,71 +58,8 @@ class Metadata:
             return default
 
 
-class Recipe:
-    def __init__(self, recipe: str, prefixes: dict = PREFIXES):
-        """
-        Parse the recipe string into a Recipe object.
-
-        :param recipe: Recipe string
-        :param prefixes: Prefixes for parsing. Default is PREFIXES constant.
-                         This allows for overriding the handling of one or
-                         more of the base objects.
-        """
-        self._raw = recipe
-        metadata, body = frontmatter.parse(re.sub(r':(?=[^/\s])', ': ', recipe))
-        self.metadata = Metadata(metadata)
-        if not body:
-            raise ValueError('No body found in recipe!')
-        self.steps = list()
-        self.ingredients = list()
-        self.cookware = list()
-        for line in re.split(r'\n{2,}', body):
-            line = re.sub(r'\s+', ' ', line)
-            if step := Step(line, prefixes=prefixes):
-                self.steps.append(step)
-                self.ingredients.extend(step.ingredients)
-                self.cookware.extend(step.cookware)
-
-    def __iter__(self) -> Generator:
-        yield from self.steps
-
-    def __len__(self) -> int:
-        return len(self.steps)
-
-    def __str__(self) -> str:
-        s = str(self.metadata)
-        s += 'Ingredients:\n\n'
-        s += '\n'.join(
-            (f'{ing:%q[%af %us] %n (%c)}' if ing.notes else f'{ing:%q[%af %us] %n}') for ing in self.ingredients
-        )
-        s += '\n' + ('-' * 50) + '\n'
-        if self.cookware:
-            s += '\nCookware:\n\n'
-            s += '\n'.join(
-                (f'{cw:%q[%af %us] %n (%c)}' if cw.notes else f'{cw:%q[%af %us] %n}') for cw in self.cookware
-            )
-            s += '\n' + ('-' * 50) + '\n'
-        s += '\n'
-        s += '\n'.join(map(str, self))
-        return s.replace('\\', '') + '\n'
-
-    @staticmethod
-    def from_file(filename: PathLike, prefixes: dict = PREFIXES):
-        """
-        Load a recipe from a file
-
-        :param filename: Path like object indicating the location of the file.
-        :param prefixes: Prefixes for parsing. Default is PREFIXES constant.
-                         This allows for overriding the handling of one or
-                         more of the base objects.
-        :return: Recipe object
-        """
-        with open(filename) as f:
-            return Recipe(f.read(), prefixes)
-
-
 class Step:
-    def __init__(self, line: str, *, prefixes: dict = PREFIXES):
+    def __init__(self, line: str, *, prefixes: dict[str, type[BaseObj]] = PREFIXES):
         """
         Parse a line into its sections and objects
 
@@ -135,18 +75,19 @@ class Step:
         self._sections: list[str | BaseObj] = list()
         self._prefixes: dict[str, type[BaseObj]] = prefixes
         self._parse(line)
-        self.obj_mapping = {
+        self.obj_mapping: dict[str, type[BaseObj]] = {
             'ingredient': Ingredient,
             'cookware': Cookware,
             'timing': Timing,
         }
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[str | BaseObj]:
         yield from self._sections
 
     def __len__(self):
         return len(self._sections)
 
+    @override
     def __repr__(self):
         return repr(self._sections)
 
@@ -172,9 +113,12 @@ class Step:
                     self.ingredients.append(obj)
                 case Cookware():
                     self.cookware.append(obj)
+                case _:
+                    raise RuntimeError(f'Unknown object type {obj.__class__.__name__}')
         if section.strip():
             self._sections.append(section)
 
+    @override
     def __str__(self):
         return ''.join(map(str, self)).rstrip()
 
@@ -199,7 +143,7 @@ class Step:
         """
         if not format_options:
             return str(self)
-        _options = dict()
+        _options: dict[type[BaseObj], str] = dict()
         match format_options:
             case dict():
                 for obj, options in format_options.items():
@@ -213,3 +157,67 @@ class Step:
                 _options[Cookware] = format_options
                 _options[Timing] = format_options
         return ''.join(map(lambda s: format(s, _options.get(s.__class__, '')), self))
+
+
+class Recipe:
+    def __init__(self, recipe: str, prefixes: dict[str, type[BaseObj]] = PREFIXES):
+        """
+        Parse the recipe string into a Recipe object.
+
+        :param recipe: Recipe string
+        :param prefixes: Prefixes for parsing. Default is PREFIXES constant.
+                         This allows for overriding the handling of one or
+                         more of the base objects.
+        """
+        self._raw: str = recipe
+        metadata, body = frontmatter.parse(re.sub(r':(?=[^/\s])', ': ', recipe))
+        self.metadata: Metadata = Metadata(metadata)
+        if not body:
+            raise ValueError('No body found in recipe!')
+        self.steps: list[Step] = list()
+        self.ingredients: list[Ingredient] = list()
+        self.cookware: list[Cookware] = list()
+        for line in re.split(r'\n{2,}', body):
+            line = re.sub(r'\s+', ' ', line)
+            if step := Step(line, prefixes=prefixes):
+                self.steps.append(step)
+                self.ingredients.extend(step.ingredients)
+                self.cookware.extend(step.cookware)
+
+    def __iter__(self) -> Generator[Step]:
+        yield from self.steps
+
+    def __len__(self) -> int:
+        return len(self.steps)
+
+    @override
+    def __str__(self) -> str:
+        s = str(self.metadata)
+        s += 'Ingredients:\n\n'
+        s += '\n'.join(
+            (f'{ing:%q[%af %us] %n (%c)}' if ing.notes else f'{ing:%q[%af %us] %n}') for ing in self.ingredients
+        )
+        s += '\n' + ('-' * 50) + '\n'
+        if self.cookware:
+            s += '\nCookware:\n\n'
+            s += '\n'.join(
+                (f'{cw:%q[%af %us] %n (%c)}' if cw.notes else f'{cw:%q[%af %us] %n}') for cw in self.cookware
+            )
+            s += '\n' + ('-' * 50) + '\n'
+        s += '\n'
+        s += '\n'.join(map(str, self))
+        return s.replace('\\', '') + '\n'
+
+    @staticmethod
+    def from_file(filename: PathLike, prefixes: dict[str, type[BaseObj]] = PREFIXES) -> Recipe:
+        """
+        Load a recipe from a file
+
+        :param filename: Path like object indicating the location of the file.
+        :param prefixes: Prefixes for parsing. Default is PREFIXES constant.
+                         This allows for overriding the handling of one or
+                         more of the base objects.
+        :return: Recipe object
+        """
+        with open(filename) as f:
+            return Recipe(f.read(), prefixes)
